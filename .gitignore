@@ -1,0 +1,21 @@
+﻿################################################################################
+# Tento soubor .gitignore byl automaticky vytvořen aplikací Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/.vs/GitPlanVerifierForDisertation
+/.vs/GitPlanVerifierForDisertation/CopilotIndices/17.14.698.11175
+/.vs/GitPlanVerifierForDisertation/CopilotIndices/17.14.698.11175/CodeChunks.db
+/.vs/GitPlanVerifierForDisertation/CopilotIndices/17.14.698.11175/CodeChunks.db-shm
+/.vs/GitPlanVerifierForDisertation/CopilotIndices/17.14.698.11175/CodeChunks.db-wal
+/.vs/GitPlanVerifierForDisertation/CopilotIndices/17.14.698.11175/SemanticSymbols.db
+/.vs/GitPlanVerifierForDisertation/CopilotIndices/17.14.698.11175/SemanticSymbols.db-shm
+/.vs/GitPlanVerifierForDisertation/CopilotIndices/17.14.698.11175/SemanticSymbols.db-wal
+/.vs/GitPlanVerifierForDisertation/FileContentIndex
+/.vs/GitPlanVerifierForDisertation/FileContentIndex/4fc265c2-7f46-4d9a-82cd-d0755ba38bd5.vsidx
+/.vs/GitPlanVerifierForDisertation/v17
+/.vs/GitPlanVerifierForDisertation/v17/.wsuo
+/.vs/GitPlanVerifierForDisertation/v17/DocumentLayout.json
+/.vs/slnx.sqlite
+/.vs/slnx.sqlite-journal
+/.vs/VSWorkspaceState.json
