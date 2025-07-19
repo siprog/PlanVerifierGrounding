@@ -51,7 +51,7 @@ namespace PlanValidationExe
         /// <summary>
         /// Determines what heuristic is used when creating a new rule from subtasks. 
         /// </summary>
-        public static Heuristics Heuristic = Heuristics.Instances;
+        public static Heuristics Heuristic = Heuristics.MostParameters;
 
         /// <summary>
         /// Ignores casing for anything (methods, actions...)
@@ -66,6 +66,7 @@ namespace PlanValidationExe
         /// </summary>
         public static bool SometimeBeforeCond = false;
 
+
         /// <summary>
         /// Returns null or value of a key in doctionary. 
         /// </summary>
@@ -74,7 +75,7 @@ namespace PlanValidationExe
         /// <param name="dict"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static V NullLookUp<K, V>(Dictionary<K, V> dict, K key) where V : class
+        public static V NullLookUp<K,V>(Dictionary<K,V> dict, K key) where V: class
         {
             if (dict.ContainsKey(key)) return dict[key];
             else return null;
