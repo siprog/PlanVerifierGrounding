@@ -120,7 +120,7 @@ namespace PlanValidation1
                         {
                             Constant[] vars = new Constant[tuple.Item2.Count];
                             vars[i] = c;
-                            Term cond = FillRest(tuple, myTypeConstants, i, vars, allConstants);
+                            Term cond = FillRest(tuple, myTypeConstants, i, vars,allConstants);                            
                             conditions.Add(cond);
                         }
                         //If there is no constant of given type then both negative and positive forallconditions are valid and so we don't create any codnitions for this action is it's essentially always true. 
@@ -141,7 +141,7 @@ namespace PlanValidation1
         /// <param name="index"></param>
         /// <param name="vars"></param>
         /// <returns></returns>
-        private Term FillRest(Tuple<string, List<int>> tuple, List<Constant> myTypeConstants, int index, Constant[] vars, Dictionary<String, Constant> allConstants)
+        private Term FillRest(Tuple<string, List<int>> tuple, List<Constant> myTypeConstants, int index, Constant[] vars, Dictionary<String,Constant> allConstants)
         {
             String name = tuple.Item1.Replace("!", ""); //In case this was forall condition
             for (int i = 0; i < tuple.Item2.Count; i++)
@@ -160,19 +160,19 @@ namespace PlanValidation1
                         //This is a constant 
                         //It cannot be a reference to forall condition, because then i would be equal to index.
                         Constant cExclamation = myTypeConstants[-j + Globals.ConstReferenceNumber];
-                        Constant c = Globals.NullLookUp(allConstants, cExclamation.Name);
-                        if (vars[i] != null) Console.WriteLine("Warning: The parameters of this action's {0} condition {1} are invalid.", this.ActionInstance.Name, name);
+                        Constant c = Globals.NullLookUp(allConstants,cExclamation.Name);
+                        if (vars[i]!=null) Console.WriteLine("Warning: The parameters of this action's {0} condition {1} are invalid.",this.ActionInstance.Name,name); 
                         vars[i] = c;
                     }
                     else
                     {
-                        if (ActionInstance.Variables[j] == null)
+                        if (ActionInstance.Variables[j]==null)
                         {
-                            string ErrorMessage = "Error: This action " + ActionInstance.Name + " contains non existent constants (constant " + j + " numbered from 0). All used constants must be described in the domain file.";
+                            string ErrorMessage= "Error: This action "+ ActionInstance.Name +" contains non existent constants (constant "+ j +" numbered from 0). All used constants must be described in the domain file.";
                             throw new ActionException(ErrorMessage);
                         }
                         //this is a normal refernce to parameters. 
-                        Constant c = Globals.NullLookUp(allConstants, ActionInstance.Variables[j].Name); //INFO we do not allow multiple constants with same name but different types.                                                                               
+                        Constant c = Globals.NullLookUp(allConstants,ActionInstance.Variables[j].Name); //INFO we do not allow multiple constants with same name but different types.                                                                               
                         if (vars[i] != null) Console.WriteLine("Warning: The parameters of this action's {0} condition {1} are invalid.", this.ActionInstance.Name, name);
                         vars[i] = c;
                     }
