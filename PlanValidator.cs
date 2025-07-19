@@ -29,7 +29,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Retruns true/false depending on whether the plan is valid. 
+        /// Returns true/false depending on whether the plan is valid. 
         /// </summary>
         /// <param name="plan"></param>
         /// <param name="allTaskTypes"></param>
@@ -37,13 +37,12 @@ namespace PlanValidation1
         /// <param name="allConstants"></param>
         /// <param name="emptyRules"></param>
         /// <returns></returns>
-        public bool IsPlanValid(List<Action> plan, Dictionary<String, List<TaskType>> allTaskTypes, List<Term> initialConditions, List<Constant> allConstants, List<Rule> emptyRules,out int taskCount, Rule goalRule,List<Term> goalState, Stopwatch watch)
+        public bool IsPlanValid(List<Action> plan, Dictionary<String, List<TaskType>> allTaskTypes, List<Term> initialConditions, List<Constant> allConstants, List<Rule> emptyRules, out int taskCount, Rule goalRule, List<Term> goalState, Stopwatch watch)
         {
             int iteration = 0;
-            List<Slot> timeline = CreateEmptyTimeline(plan.Count+1);
+            List<Slot> timeline = CreateEmptyTimeline(plan.Count + 1);
             timeline[0].AddConditions(initialConditions); //Adds initial state assuming all initial conditions are only positive. 
             CheckNullConditions(plan[0], timeline[0]);
-            //if (plan[0].PosPreConditions?.Count > 0) timeline[0].AddConditions(plan[0].PosPreConditions); This was here before why. I think its wrong
             if (!timeline[0].SharesAllItems(plan[0].PosPreConditions))
             {
                 Console.WriteLine("This Action {0} does not have it's preconditions {1}. Plan is invalid.", plan[0], string.Join(",", plan[0].PosPreConditions));
@@ -94,7 +93,7 @@ namespace PlanValidation1
             HashSet<Task> newTasks = new HashSet<Task>();
             HashSet<Task> allTasks = new HashSet<Task>();
             HashSet<Task> emptyTasks = CreateEmptyTasks(emptyRules, timeline, allConstants);
-            newTasks.UnionWith(emptyTasks);            
+            newTasks.UnionWith(emptyTasks);
             int position = 0; //position in plan.
 
             //Transforms action into tasks. 
@@ -113,33 +112,31 @@ namespace PlanValidation1
                 newTasks.Add(t);
                 position++;
             }
-            HashSet<Task> everytask= newTasks;
+            HashSet<Task> everytask = newTasks;
             //Main loops where we find applicable rules from newTasks and then use them to create new set of tasks.  
             while (newTasks?.Any() == true)
             {
                 int notNew = 0;
-                //time = watch.ElapsedMilliseconds;   
-                //newTasks = newTasks.Distinct().ToList(); Hashsets are always distinct               
-                List <Rule> applicableRules = GetApplicableRules(newTasks, iteration - 1);
+                List<Rule> applicableRules = GetApplicableRules(newTasks, iteration - 1);
                 applicableRules = applicableRules.Distinct().ToList();
                 applicableRules = applicableRules.Except(emptyRules).ToList(); //We have already created basic empty rules. We dont want to create them again. 
                 allTasks.UnionWith(newTasks);
-                newTasks = new HashSet<Task>();                
+                newTasks = new HashSet<Task>();
                 foreach (Rule r in applicableRules)
-                {                    
+                {
                     HashSet<RuleInstance> ruleInstances = r.GetRuleInstances(plan.Count, allConstants, iteration - 1, plan.Count + 1);
                     foreach (RuleInstance ruleInstance in ruleInstances)
-                    {                        
+                    {
                         List<Task> subtasks = new List<Task>();
                         Term mainTaskName = ruleInstance.MainTask.TaskInstance;
                         subtasks = ruleInstance.Subtasks;
                         double min = FindMinIndex(subtasks); //Returns -1 if subtasks are empty
                         double max = FindMaxIndex(subtasks); //Returns -1 if subtasks are empty
                         bool[] mainTaskVector = new bool[plan.Count];
-                        bool validNewTask = true;                        
-                        //TO does not need to check intersections but since this create the maintaskvector there is no point in skipping this. It would be teh same amount of work. 
-                        validNewTask=CreateActionVectorAndCheckIntersections(min, max, plan.Count, subtasks, ref mainTaskVector);
-                                             
+                        bool validNewTask = true;
+                        //TO does not need to check intersections but since this creates the maintaskvector there is no point in skipping this. It would be the same amount of work. 
+                        validNewTask = CreateActionVectorAndCheckIntersections(min, max, plan.Count, subtasks, ref mainTaskVector);
+
                         if (validNewTask)
                         {
                             if (Globals.TOIndicator || !Globals.Interleaving)
@@ -155,8 +152,8 @@ namespace PlanValidation1
                             preconditionPosition = GetandCheckPreconditionPos(ruleInstance, timeline, min);
                             if (!preconditionPosition.Item1)
                             {
-                                validNewTask = false;                                
-                            } 
+                                validNewTask = false;
+                            }
                             if (!CheckBetweenConditions(ruleInstance, timeline, mainTaskVector)) validNewTask = false;
                             if (Globals.SometimeBeforeCond && !CheckBufferZones(ruleInstance, mainTaskVector)) validNewTask = false;
                             if (validNewTask)
@@ -164,7 +161,7 @@ namespace PlanValidation1
 
                                 Task t = new Task(mainTaskName, mainTaskVector, ruleInstance.MainTask.TaskType, min, max, iteration, preconditionPosition.Item2);
                                 if (CheckNewness(everytask, t))
-                                {                                   
+                                {
                                     MarkSubtasks(subtasks);
                                     newTasks.Add(t);
                                     everytask.Add(t);
@@ -173,19 +170,20 @@ namespace PlanValidation1
                                         taskCount = everytask.Count();
                                         return true;
                                     }
-                                } else { notNew++; }
+                                }
+                                else { notNew++; }
                             }
                         }
-                    }                   
+                    }
                 }
                 iteration++;
-            }            
+            }
             taskCount = everytask.Count();
             return false;
         }
 
         /// <summary>
-        /// Cheks whether multiple subtasks dont intersect (share an action that they decompose into)
+        /// Checks whether multiple subtasks dont intersect (share an action that they decompose into)
         /// Min is minimal start index of subtasks and max is maximal end index of subtasks. 
         /// </summary>
         /// <returns></returns>
@@ -203,9 +201,9 @@ namespace PlanValidation1
                 }
                 if (sum > 1)
                 {
-                    
-                    return false;                    
-                }               
+
+                    return false;
+                }
                 mainTaskVector[i] = (sum == 1);
             }
             return true;
@@ -221,7 +219,7 @@ namespace PlanValidation1
         /// <returns></returns>
         private bool CheckGoalState(Slot slot, List<Term> goalState)
         {
-            foreach(Term t in goalState)
+            foreach (Term t in goalState)
             {
                 if (!slot.Conditions.Contains(t))
                 {
@@ -233,14 +231,14 @@ namespace PlanValidation1
 
         private bool CheckContinuity(bool[] mainTaskVector)
         {
-            int sequence=0;
+            int sequence = 0;
             const int Init = 0;
-            const int Started= 1;
+            const int Started = 1;
             const int Stopped = 2;
-            for(int i=0; i<mainTaskVector.Length;i++)
+            for (int i = 0; i < mainTaskVector.Length; i++)
             {
-                if (sequence == Init && mainTaskVector[i]) sequence=Started;
-                if (sequence == Started && !mainTaskVector[i]) sequence=Stopped;
+                if (sequence == Init && mainTaskVector[i]) sequence = Started;
+                if (sequence == Started && !mainTaskVector[i]) sequence = Stopped;
                 if (sequence == Stopped && mainTaskVector[i]) return false; //This is not continuous subseqeunce. 
                 //Empty task will fly through as that one does not even get to Started.
             }
@@ -314,17 +312,16 @@ namespace PlanValidation1
         /// </summary>
         private HashSet<Task> CreateEmptyTasks(List<Rule> emptyRules, List<Slot> timeline, List<Constant> allConstants)
         {
-            Dictionary<Task,int> validTasksFromPrevIteration= new Dictionary<Task, int>(); //This is only relevant for sometime before conditions.
-                                                                            // //Sometime before Get list of all suitable tasks from previous iteration. Get those that are not suitable in this iteration and put them in with buffer n-1. Then get new suitable tasks by keeping those that were not suitable and adding all new valid ones.  
+            Dictionary<Task, int> validTasksFromPrevIteration = new Dictionary<Task, int>(); //This is only relevant for sometime before conditions.
+                                                                                             // //Sometime before Get list of all suitable tasks from previous iteration. Get those that are not suitable in this iteration and put them in with buffer n-1. Then get new suitable tasks by keeping those that were not suitable and adding all new valid ones.  
             HashSet<Task> validTasks = new HashSet<Task>();
             foreach (Rule r in emptyRules)
             {
                 for (int i = 0; i < timeline.Count; i++)
                 {
-                    //Constant[] emptyConst = new Constant[r.MainTaskType.NumOfVariables]; /
                     Constant[] emptyConst = new Constant[r.AllVars.Count];
                     List<Task> suitableTasks;
-                    if (r.posPreConditions==null || r.posPreConditions?.Any(x=>x.Item2!="=" && x.Item2!="equal")!= true) suitableTasks = FillTaskWithNoPreconditions(r, timeline[i], emptyConst.ToList(), 0, i, timeline.Count, new List<Task>(), allConstants);
+                    if (r.posPreConditions == null || r.posPreConditions?.Any(x => x.Item2 != "=" && x.Item2 != "equal") != true) suitableTasks = FillTaskWithNoPreconditions(r, timeline[i], emptyConst.ToList(), 0, i, timeline.Count, new List<Task>(), allConstants);
                     else
                     {
                         suitableTasks = FillTaskFromSlot(r, timeline[i], emptyConst.ToList(), 0, i, timeline.Count, new List<Task>(), allConstants, r.AllVarsTypes);
@@ -347,12 +344,12 @@ namespace PlanValidation1
                                 {
 
                                     if (CheckNewness(validTasks, t))
-                                    {                                       
+                                    {
                                         validTasks.Add(t);
                                         if (Globals.SometimeBeforeCond)
                                         {
                                             Task key = validTasksFromPrevIteration.Keys.Where(x => x.TaskInstance.Equals(t.TaskInstance)).FirstOrDefault();
-                                            //Returns the kez in the dictionary that is equal to my value. 
+                                            //Returns the key in the dictionary that is equal to my value. 
                                             if (key != null)
                                             {
                                                 validTasksFromPrevIteration[key] = i;
@@ -363,20 +360,20 @@ namespace PlanValidation1
                                             }
                                         }
                                     }
-                                    
+
                                 }
-                                t.BufferZoneIndex = (int)Math.Ceiling(t.StartIndex); //TODO how do we do empty tasks for bufferZones?
+                                t.BufferZoneIndex = (int)Math.Ceiling(t.StartIndex);
                             }
                         }
                     }
                     //Now I must add the empty tasks with n smaller than current slot. So for exmaple lets say empty task E was true in position 3 now I am at position 4 so I must add it with n =3.
                     if (Globals.SometimeBeforeCond)
                     {
-                        foreach(var taskCombo in validTasksFromPrevIteration)
+                        foreach (var taskCombo in validTasksFromPrevIteration)
                         {
-                            if (taskCombo.Value<i)
+                            if (taskCombo.Value < i)
                             {
-                                Task t = new Task(taskCombo.Key.TaskInstance, timeline.Count,taskCombo.Key.TaskType, i - 0.5, i - 0.5);
+                                Task t = new Task(taskCombo.Key.TaskInstance, timeline.Count, taskCombo.Key.TaskType, i - 0.5, i - 0.5);
                                 validTasks.Add(t);
                                 t.BufferZoneIndex = taskCombo.Value;
                             }
@@ -399,10 +396,10 @@ namespace PlanValidation1
             }
         }
 
-        public Task GetKeyEqualTo(Dictionary<Task,int> tasks, Task t)
+        public Task GetKeyEqualTo(Dictionary<Task, int> tasks, Task t)
         {
             int i = 0;
-            foreach(Task task in tasks.Keys)
+            foreach (Task task in tasks.Keys)
             {
                 if (t.isEqualTo(task)) return task;
                 i++;
@@ -469,7 +466,6 @@ namespace PlanValidation1
                 foreach (List<Constant> partialVars in newAllVars)
                 {
                     Term term = r.FillMainTaskFromAllVarsReturnTerm(partialVars);
-                    //Term term = new Term(r.MainTaskType.Name, partialVars.ToArray()); //TODO to je cele vymenene za to nahore ,protoze partial vars jsou ted podle poctu parametru
                     Task t;
                     t = new Task(term, taskBoolSize, r.MainTaskType, slotNumber - 0.5, slotNumber - 0.5);
                     solution.Add(t);
@@ -506,8 +502,7 @@ namespace PlanValidation1
                         }
                         else
                         {
-                            //forallcondition is invalid. This slot will not fulfill my empty task
-                            //TODo couldprobably be improved by moving above as if forallcondition will not be fulfilled it doesn't matter if other conditions were fulfilled. 
+                            //forallcondition is invalid. This slot will not fulfill my empty task 
                             return solution;
                         }
                     }
@@ -521,12 +516,12 @@ namespace PlanValidation1
                     }
                     else
                     {
-                        //We go through each conditions that has the same name as the desired condition of the rule. 
+                        //We go through each condition that has the same name as the desired condition of the rule. 
                         foreach (Term c in conditions)
                         {
                             //This conditions might fill my task. If so I must fill allvars in this task with appropiate string. 
                             //So now we go one by one through parameters. 
-                            bool valid=true;  //Represents whether this particular condition fulfill my task in a valid way. 
+                            bool valid = true;  //Represents whether this particular condition fulfill my task in a valid way. 
                             for (int i = 0; i < cond.Item3.Count; i++)
                             {
 
@@ -535,11 +530,11 @@ namespace PlanValidation1
                                 if (DesiredType.IsAncestorTo(myConst.Type))
                                 {
                                     if (newPartialVars[cond.Item3[i]] == null) newPartialVars[cond.Item3[i]] = myConst;
-                                    else if (newPartialVars[cond.Item3[i]] != myConst) valid=false;
-                                } else
+                                    else if (newPartialVars[cond.Item3[i]] != myConst) valid = false;
+                                }
+                                else
                                 {
-                                    //Here used to be return solution and return null  but both are wrong.
-                                    valid=false;
+                                    valid = false;
                                 }
 
                             }
@@ -563,14 +558,14 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Return trues if in this slot all constants of given forallType are fulfilling given forallCondition. 
+        /// Return true if in this slot all constants of given forallType are fulfilling given forallCondition. 
         /// </summary>
         /// <param name="forallCondition">name of the condition that we want to fulfill for all constants of given type</param>
         /// <param name="forallType">type of constants we want to fill the forall condition</param>
         /// <param name="forallPosition">position of the forall constant in condition parameters</param>
         /// <param name="s">Slot</param>
         /// <param name="allConstants">list of all consatnts</param>
-        private bool CheckForallConditions(string forallCondition, ConstantType forallType,int forallPosition,Slot s, List<Constant> allConstants)
+        private bool CheckForallConditions(string forallCondition, ConstantType forallType, int forallPosition, Slot s, List<Constant> allConstants)
         {
             foreach (Constant c in allConstants.Where(x => forallType.IsAncestorTo(x.Type)))
             {
@@ -596,8 +591,7 @@ namespace PlanValidation1
         {
             if (index == partialAllVars.Count)
             {
-                //Term term = new Term(r.MainTaskType.Name, partialAllVars.ToArray());
-                Term term= r.FillMainTaskFromAllVarsReturnTerm(partialAllVars);
+                Term term = r.FillMainTaskFromAllVarsReturnTerm(partialAllVars);
                 Task t;
                 t = new Task(term, taskBoolSize, r.MainTaskType, slotNumber - 0.5, slotNumber - 0.5);
                 solution.Add(t);
@@ -607,7 +601,7 @@ namespace PlanValidation1
             {
                 if (partialAllVars[index] != null)
                 {
-                    //This only happens if the empty rule has real constant as parameter. 
+                    //This only happens if the empty rule has a real constant as parameter. 
                     List<Task> newTasks = FillTaskWithNoPreconditions(r, s, partialAllVars, index++, slotNumber, taskBoolSize, solution, allConstants);
                     solution.AddRange(newTasks);
                     solution = solution.Distinct().ToList();
@@ -616,7 +610,8 @@ namespace PlanValidation1
                 {
                     ConstantType desiredType = r.AllVarsTypes[index];
                     List<Constant> fittingConstants = allConstants.Where(x => desiredType.IsAncestorTo(x.Type)).ToList();
-                    if (r.AllVars[index].Contains("!")) {
+                    if (r.AllVars[index].Contains("!"))
+                    {
                         //This is a forall condition.
                         //We dont have to worry this will be handled in ruleInstance. 
                         //WE just have to mark each constant with !
@@ -642,12 +637,10 @@ namespace PlanValidation1
             {
                 Term condition = tuple.Item3;
                 //Get the actual slot number from the boolean vector and the number of the subtask in rule
-                // int k = GetSlotNumber(tuple.Item1, mainTaskVector);
-                //int l = GetSlotNumber(tuple.Item2, mainTaskVector);
                 int k = (int)Math.Floor(r.Subtasks[tuple.Item1].EndIndex); //Why floor. if its a normal action then lets say its 4 then the conditions must be true from slot 5.
                 //If it is an empty subtask. Then lets say the index is 4.5 it looks at its conditions on slot 5. The between conditions must also be true from slot 5. 
                 int l = (int)Math.Ceiling(r.Subtasks[tuple.Item2].StartIndex); //The between condition ends on the same position that the empty task looks at its conditions. So for empty task on 4,5 which looks at slot 5 for preconditions it will also looks to 5.
-                for (int i = k+1; i <= l; i++)
+                for (int i = k + 1; i <= l; i++)
                 {
                     if (!timeline[i].Conditions.Contains(condition)) return false;
                 }
@@ -658,7 +651,7 @@ namespace PlanValidation1
                 //Get the actual slot number from the boolean vector and the number of the subtask in rule
                 int k = (int)Math.Floor(r.Subtasks[tuple.Item1].EndIndex);
                 int l = (int)Math.Ceiling(r.Subtasks[tuple.Item2].StartIndex);
-                for (int i = k+1; i <= l; i++)
+                for (int i = k + 1; i <= l; i++)
                 {
                     if (timeline[i].Conditions.Contains(condition)) return false;
                 }
@@ -667,16 +660,16 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// This functsion should only be called if we do sometime before conditions. 
+        /// This function should only be called if we do sometime before conditions. 
         /// </summary>
         /// <param name="r"></param>
         /// <param name="vector"></param>
         /// <returns></returns>
-        private bool CheckBufferZones(RuleInstance r,bool[] vector)
+        private bool CheckBufferZones(RuleInstance r, bool[] vector)
         {
-            foreach(Task t in r.Subtasks)
+            foreach (Task t in r.Subtasks)
             {
-                for(int i=t.BufferZoneIndex;i<t.StartIndex;i++) //default value of buffer zone is on start index. So if the task has no preconditions then bufferYone is equal start index and it will go through here. 
+                for (int i = t.BufferZoneIndex; i < t.StartIndex; i++) //default value of buffer zone is on start index. So if the task has no preconditions then bufferYone is equal start index and it will go through here. 
                 {
                     if (vector[i])
                     {
@@ -691,18 +684,18 @@ namespace PlanValidation1
         /// <summary>
         /// Check preconditions of a task. It returns whether conditions are satisfied and the slot number. 
         /// Note that for immediatelly before conditions if the slot number is not the start index then it return false,
-        /// otherwise for sometime before conditions if the conditions are true at anz slot before the start index it will return true and the slot number. 
+        /// otherwise for sometime before conditions if the conditions are true at any slot before the start index it will return true and the slot number. 
         /// </summary>
         /// <param name="r"></param>
         /// <param name="timeline"></param>
         /// <param name="StartIndex"></param>
         /// <returns></returns>
-        private Tuple<bool,int> GetandCheckPreconditionPos(RuleInstance r, List<Slot> timeline, double StartIndex)
+        private Tuple<bool, int> GetandCheckPreconditionPos(RuleInstance r, List<Slot> timeline, double StartIndex)
         {
 
             //Gets the start index of this task. 
             int i = (int)Math.Ceiling(StartIndex);
-            int j = i; 
+            int j = i;
             int lowerLimit = i;// For immediately before conditions, the precondition must be true right before the first action. 
             if (Globals.SometimeBeforeCond) lowerLimit = 0;
             while (j <= i && j >= lowerLimit)
@@ -714,17 +707,17 @@ namespace PlanValidation1
                 }
                 j--;
             }
-            return new Tuple<bool,int>(false,0);
+            return new Tuple<bool, int>(false, 0);
         }
 
 
-        private bool CheckPreconditionsOnSlot (RuleInstance r, Slot t)
+        private bool CheckPreconditionsOnSlot(RuleInstance r, Slot t)
         {
             foreach (Tuple<int, Term> tuple in r.PosPreConditions)
             {
                 Term condition = tuple.Item2;
                 if (!condition.Name.Equals("="))//Already handled in ruleinstance. We can simply ignore it here. 
-                {                   
+                {
                     if (!t.Conditions.Contains(condition))
                     {
                         return false;
@@ -841,7 +834,7 @@ namespace PlanValidation1
             return curMin;
         }
 
-        private List<Rule> GetApplicableRules(HashSet<Task> newTasks,int iteration)
+        private List<Rule> GetApplicableRules(HashSet<Task> newTasks, int iteration)
         {
             List<Rule> readyRules = new List<Rule>();
             foreach (Task t in newTasks)
@@ -859,20 +852,21 @@ namespace PlanValidation1
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        private bool IsGoalTask(Task t,Rule goalRule)
-        {           
-                bool[] actionVector = t.GetActionVector();
-                for (int i = 0; i < actionVector.Length; i++)
-                {
+        private bool IsGoalTask(Task t, Rule goalRule)
+        {
+            bool[] actionVector = t.GetActionVector();
+            for (int i = 0; i < actionVector.Length; i++)
+            {
                 if (!actionVector[i])
                     return false;
-                }                
-                if (Globals.KnownRootTask)
-                {
+            }
+            if (Globals.KnownRootTask)
+            {
                 //The task must span over all actions and be the goal task. 
                 return t.TaskType.Equals(goalRule.MainTaskType);
-                } else return true;
-                //There is no goaltask so anz task that spans over all actions will do. 
+            }
+            else return true;
+            //There is no goaltask so any task that spans over all actions will do. 
         }
     }
 }

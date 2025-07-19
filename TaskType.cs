@@ -6,14 +6,14 @@ using System.Text;
 namespace PlanValidation1
 {
     /// <summary>
-    /// Type of a task used to call Rules and tell them there are task insatnces ready. 
+    /// Type of a task used to call Rules and tell them there are task instances ready. 
     /// </summary>
     class TaskType
     {
         /// <summary>
         /// Rules for which this type of task is the main task type. 
         /// </summary>
-        public List<Rule> MainRules= new List<Rule>();
+        public List<Rule> MainRules = new List<Rule>();
         /// <summary>
         /// List of rules that contains this type of task as subtask. 
         /// </summary>
@@ -27,7 +27,7 @@ namespace PlanValidation1
         /// If true then this is either root task or some task to which root task decomposes.
         /// If this is false, it is a separate rule/task, so it won't help me get desired root task. Therefor I can remove this rule. 
         /// </summary>
-        internal bool reachable=false;
+        internal bool reachable = false;
         private object goalRule;
 
         public TaskType(String name, int numOfVars)
@@ -60,7 +60,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Sets mintask length to i if i is smaller tahn mintask length otherwise dos nothing.
+        /// Sets mintask length to i if i is smaller than mintask length otherwise dos nothing.
         /// Return true if value changed.
         /// </summary>
         /// <param name="i"></param>
@@ -88,7 +88,7 @@ namespace PlanValidation1
         /// Tells the rules that this task is now ready. If the rule is full (all tasks are ready it returns it otherwise returns null)
         /// </summary>
         /// <returns></returns>
-        private Rule ActivateRule(Rule r, int i,int iteration)
+        private Rule ActivateRule(Rule r, int i, int iteration)
         {
             bool fullyActivated = r.Activate(this, i, iteration);
             if (fullyActivated) return r;
@@ -106,7 +106,7 @@ namespace PlanValidation1
             List<Rule> rulesReadyToGo = new List<Rule>();
             foreach (Rule r in Rules)
             {
-                Rule r2 = ActivateRule(r, instancesCount,iteration);
+                Rule r2 = ActivateRule(r, instancesCount, iteration);
                 if (r2 != null) rulesReadyToGo.Add(r2);
             }
             return rulesReadyToGo;
@@ -133,7 +133,7 @@ namespace PlanValidation1
                     r.MarkAsReached();
                 }
             }
-            
+
         }
     }
 }

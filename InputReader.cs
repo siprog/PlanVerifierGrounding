@@ -112,7 +112,7 @@ namespace PlanValidation1
                 }
                 if (line.Contains("(:method"))
                 {
-                    //This means we are starting a new rule. So if the previous rule had named tasks but didn't use them. now we need to reset the names
+                    //This means we are starting a new rule. So if the previous rule had named tasks but didn't use them, now we need to reset the names
                     namedTasks = new List<Tuple<TaskType, string, int>>();
                     num = 0;
                     state = State.inMethod;
@@ -228,7 +228,7 @@ namespace PlanValidation1
                             {
                                 //If the rule is empty as in has no substasks than this is the last thing it will go through.
                                 state = State.inMethod;
-                                lastInConditions = true; //We cant have empty ssubtask with between conditions. 
+                                lastInConditions = true; //We cant have empty subtask with between conditions. 
                             }
                         }
                         catch (Exception)
@@ -371,7 +371,7 @@ namespace PlanValidation1
                     Dictionary<String, Constant> actVars = new Dictionary<String, Constant>();
                     if (line.Contains(":action"))
                     {
-                        //This is here because some atcions might nto have preconditions or effects so the normal finish for actions after effects does not apply. But if it is followed by another action we can use this one.
+                        //This is here because some actions might not have preconditions or effects so the normal finish for actions after effects does not apply. But if it is followed by another action we can use this one.
                         if (curActionType.Name != null) globalActions.Add(curActionType);
                         curActionType = new ActionType();
 
@@ -412,7 +412,7 @@ namespace PlanValidation1
                         Tuple<String, List<int>> condition = null;
                         isPos = true;
                         //What if I have action without parameters and with conditions?
-                        //The question mark does that if vars is null it will jsut pass null inside the method. 
+                        //The question mark does that if vars is null it will just pass null inside the method. 
                         condition = GetActionCondition(line, curActionType.Vars?.Select(x => x.Name).ToList(), ref curActionType.Constants, out isPos);
 
                         if (condition != null)
@@ -444,7 +444,6 @@ namespace PlanValidation1
                     }
                     if (doneActEff)
                     {
-                        //warnign there used to be if line.Trim().Equals(")") or the done actEff but because if this is followed by another atcion or its the last action we will put it in the gllobal actions we dont need to mention it separately
                         if (curActionType.Name != null) globalActions.Add(curActionType);
                         curActionType = new ActionType();
                     }
@@ -515,7 +514,7 @@ namespace PlanValidation1
         /// <summary>
         /// I have created the entire type hierarchy. Now I must add type any which is a child to everything.  
         /// This is used in rules or actiontypes, when we have a constant without a type. 
-        /// Can also be used to ignore all types.        ///
+        /// Can also be used to ignore all types.
         /// </summary>
         /// <param name="types"></param>
         private void FinishTypeHierarchy(ref Dictionary<String, ConstantType> types)
@@ -583,7 +582,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Cleans up input. Removes all required words. If you wanna check for space after the words you must add it in the string.         /// e.        
+        /// Cleans up input. Removes all required words. If you wanna check for space after the words you must add it in the string.   
         /// Also removes all comments after commentMark
         /// </summary>
         /// <param name="line"></param>
@@ -719,7 +718,7 @@ namespace PlanValidation1
                         {
                             if (!var.StartsWith("?"))
                             {
-                                //This consatnt is not in the list of constants for this actionType we must add it.                                 
+                                //This constant is not in the list of constants for this actionType we must add it.                                 
                                 constants.Add(c);
                                 index = constants.Count - 1;
                             }
@@ -729,7 +728,7 @@ namespace PlanValidation1
                                 index = constants.FindIndex(x => x.Name == "!" + var);
                             }
                         }
-                        i = Globals.ConstReferenceNumber - index; //This ensures that this number remains negaitve and won't trickle over to normal references
+                        i = Globals.ConstReferenceNumber - index; //This ensures that this number remains negative and won't trickle over to normal references
                     }
                     references.Add(i);
                 }
@@ -742,7 +741,7 @@ namespace PlanValidation1
 
 
         /// <summary>
-        /// Finds task in alltasktypes that has the same name and variable. If that one does not exist it retruns the original task. 
+        /// Finds task in alltasktypes that has the same name and variable. If that one does not exist it returns the original task. 
         /// </summary>
         /// <param name="tT"></param>
         /// <param name="alltaskTypes"></param>
@@ -925,7 +924,7 @@ namespace PlanValidation1
             return parameters;
         }
 
-        //The line loks like this: (st1 <st2) or ike this (< st1 st2)
+        //The line loks like this: (st1 <st2) or like this (< st1 st2)
         //The tuple is ordered the same way the tasks are in rule. So based on which tuple it is in list it is the num. 
         private void CreatePartialOrder(string line, List<Tuple<TaskType, string, int>> namedTasks, ref Rule curRule)
         {
@@ -955,7 +954,7 @@ namespace PlanValidation1
             return new Tuple<TaskType, string>(t, name);
         }
 
-        ////The line loks like this: :task (makeNoodles ?n ?p)
+        ///The line loks like this: :task (makeNoodles ?n ?p)
         ///or like this:  (add water ?p)
         ///Depends on whether this is the main task of rule or subtask. 
         private TaskType CreateTaskType(string line, ref Dictionary<String, Constant> methodParam, out List<int> refList, Dictionary<String, Constant> fixedConstants)
@@ -965,14 +964,10 @@ namespace PlanValidation1
             string[] parts = line.Trim().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
             if (parts.Length == 0)
             {
-                //Console.WriteLine("Empty Line {0}", line); 
                 return null;
             }
             string name = parts[0];
             string[] parameters = (string[])parts.Skip(1).ToArray();
-            //if (methodParam != null)
-            //{
-            //List<String> methodParNames = methodParam.Select(x => x.Name).ToList(); //TODo we removed hit is that okay??
             foreach (string param in parameters)
             {
                 if (param != "")
@@ -1005,7 +1000,6 @@ namespace PlanValidation1
                     }
                 }
             }
-            //} konex method parama null ifu
             TaskType tT = new TaskType(name, parameters.Length);
             return tT;
         }
@@ -1035,16 +1029,12 @@ namespace PlanValidation1
             foreach (String possibleParam in parameters)
             {
                 //Currently we ignore types so just find the one that contains ?
-                if (possibleParam.Contains("?")) myParams.Add(possibleParam); //Berem to is  tim otaznikem!                
+                if (possibleParam.Contains("?")) myParams.Add(possibleParam);
             }
             TaskType tT = new TaskType(name, myParams.Count);
             return tT;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="fileName"></param>
         public List<Action> ReadPlan(String fileName, List<ActionType> allActionTypes, Dictionary<String, Constant> allConstants)
         {
             System.IO.StreamReader file = new System.IO.StreamReader(fileName);
@@ -1355,7 +1345,6 @@ namespace PlanValidation1
             string[] parts = s.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
             if (parts.Length == 0)
             {
-                //Console.WriteLine("Empty Line {0}", s);
                 return null;
             }
             else
@@ -1367,7 +1356,6 @@ namespace PlanValidation1
                 for (int i = 0; i < variables.Length; i++)
                 {
                     Constant c = FindConstant(variables[i], allConstants);
-                    //Constant c= new Constant(variables[i], m.ActionTerm.Variables[i].Type); //The problem here was that oil is ingredient but add takes food so then  when it was used in higher task it would not accept oil,cause higher task wants ingredient again. 
                     vars[i] = c;
                 }
                 Term actionInstance = new Term(name, vars);

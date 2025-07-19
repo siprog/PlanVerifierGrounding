@@ -11,7 +11,7 @@ namespace PlanValidation1
     class Term
     {
         public String Name { get; }
-        public Constant[] Variables { get; } //maybe readonly cannot be changed because of hashcode
+        public Constant[] Variables { get; } //cannot be changed because of hashcode
 
         public Term(String name, Constant[] variables)
         {
@@ -47,7 +47,6 @@ namespace PlanValidation1
             }
             else return false;
         }
-        //I didn't override GetHashFunction is that ok?
 
         public override int GetHashCode()
         {

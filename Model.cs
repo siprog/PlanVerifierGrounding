@@ -19,7 +19,7 @@ namespace PlanValidationExe
 
         /// <summary>
         /// Marks all task and rules that can be reached from decomposition of goal rule. 
-        /// This does not mark actionTypes. But that is not necessary as wehn we create actions, we look at tasktypes and their reachability.   
+        /// This does not mark actionTypes. But that is not necessary as when we create actions, we look at tasktypes and their reachability.   
         /// </summary>
         /// <param name="goalRule"></param>
         internal void MarkAsReachable(Rule goalRule)
@@ -35,7 +35,7 @@ namespace PlanValidationExe
             {
                 if (!r.reachable)
                 {
-                    //This lets the rule knwow it will be removed. So the rule will tell it's main task and all subtasks to remove it from their lists of rules. So we remove two pointers to this rule. 
+                    //This lets the rule know it will be removed. So the rule will tell it's main task and all subtasks to remove it from their lists of rules. So we remove two pointers to this rule. 
                     //The last pointer goes from allrules so this one will be deleted after. 
                     r.NotifyOfRemoval();
                     deleteRules.Add(r);

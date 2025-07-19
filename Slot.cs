@@ -7,7 +7,7 @@ namespace PlanValidation1
 {
     /// <summary>
     /// Represents one moment "in time". There can be exactly one action in each slot. 
-    /// Slot ha s a list of positive conditions that are true in that moment. Negative conditions are simply conditions that are not present. 
+    /// Slot has a list of positive conditions that are true in that moment. Negative conditions are simply conditions that are not present. 
     /// </summary>
     class Slot
     {
@@ -97,7 +97,7 @@ namespace PlanValidation1
         public bool SharesAllItems(List<Term> conditions)
         {
             foreach (Term condition in conditions)
-            {               
+            {
                 if (!Conditions.Contains(condition))
                 {
                     Console.WriteLine(" This conditions {0} is not present.", condition);

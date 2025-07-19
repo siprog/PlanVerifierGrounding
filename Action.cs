@@ -91,7 +91,7 @@ namespace PlanValidation1
                 if (tuple.Item1.Contains("!"))
                 {
                     //This is a forall condition.We will handle it separately. 
-                    List<Term> conditions=CreateForAllCondition(tuple,myTypeConstants,allConstants);
+                    List<Term> conditions = CreateForAllCondition(tuple, myTypeConstants, allConstants);
                     FinalConditions.AddRange(conditions);
                 }
                 else
@@ -123,7 +123,7 @@ namespace PlanValidation1
                             Term cond = FillRest(tuple, myTypeConstants, i, vars, allConstants);
                             conditions.Add(cond);
                         }
-                        //If there is no constant of given type then both negative and positive forallconditions are valid and so we don't create any codnitions for this action is it's essentially always true. 
+                        //If there is no constant of given type then both negative and positive forallconditions are valid and so we don't create any conditions for this action is it's essentially always true. 
 
                     }
                 }
@@ -133,8 +133,8 @@ namespace PlanValidation1
 
         /// <summary>
         /// Fills all vars for this condition, except for the one with given index. 
-        /// This method is used both for creating normal and forall conditions. With forallcondition the index is teh index of the forall variable.
-        /// For nromal conditions just set index to -1.
+        /// This method is used both for creating normal and forall conditions. With forallcondition the index is the index of the forall variable.
+        /// For normal conditions just set index to -1.
         /// </summary>
         /// <param name="tuple"></param>
         /// <param name="myTypeConstants"></param>
@@ -171,13 +171,13 @@ namespace PlanValidation1
                             string ErrorMessage = "Error: This action " + ActionInstance.Name + " contains non existent constants (constant " + j + " numbered from 0). All used constants must be described in the domain file.";
                             throw new ActionException(ErrorMessage);
                         }
-                        //this is a normal refernce to parameters. 
+                        //this is a normal reference to parameters. 
                         Constant c = Globals.NullLookUp(allConstants, ActionInstance.Variables[j].Name); //INFO we do not allow multiple constants with same name but different types.                                                                               
                         if (vars[i] != null) Console.WriteLine("Warning: The parameters of this action's {0} condition {1} are invalid.", this.ActionInstance.Name, name);
                         vars[i] = c;
                     }
                 }
-            }            
+            }
             Term condition = new Term(name, vars);
             return condition;
         }

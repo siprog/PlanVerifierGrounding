@@ -20,7 +20,6 @@ namespace PlanValidation1
 
         /// <summary>
         /// This is the index of the last state before this task that satisfies the before condition. This is only relevant for sometime before conditions.
-        /// TODO what will be the value for immediately before conditions 0 or do we set it to something?
         /// </summary>
         public int BufferZoneIndex;
 
@@ -47,21 +46,6 @@ namespace PlanValidation1
                 }
             }
         }
-
-        /// <summary>
-        /// For empty subtasks this changes nothing. 
-        /// </summary>
-        /* private void UpdateStartIndex()
-         {
-             for (int i = ActionVector.Length - 1; i >= 0; i--)
-             {
-                 if (ActionVector[i])
-                 {
-                     StartIndex = i;
-                     break;
-                 }
-             }
-         }*/
         private void UpdateStartIndex()
         {
             for (int i = 0; i < ActionVector.Length; i++)
@@ -74,7 +58,7 @@ namespace PlanValidation1
             }
         }
 
-public Task(Task t)
+        public Task(Task t)
         {
             this.TaskInstance = t.TaskInstance;
             this.ActionVector = t.ActionVector;
@@ -110,13 +94,13 @@ public Task(Task t)
         }
 
         /// <summary>
-        /// Compares wehther two tasks are equal. thez are equal if thez have the same name and variable  and stat and end index, but thez maz have different bufferzone values. 
+        /// Compares whether two tasks are equal. they are equal if they have the same name and variable  and stat and end index, but they may have different bufferzone values. 
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
         public bool isEqualTo(Task t)
         {
-            return (t.TaskInstance.Equals(this.TaskInstance) && GetActionVector().SequenceEqual(t.GetActionVector()) && GetStartIndex() == t.GetStartIndex() && GetEndIndex() == t.GetEndIndex()) ;
+            return (t.TaskInstance.Equals(this.TaskInstance) && GetActionVector().SequenceEqual(t.GetActionVector()) && GetStartIndex() == t.GetStartIndex() && GetEndIndex() == t.GetEndIndex());
         }
 
         public override bool Equals(object obj)
@@ -126,7 +110,7 @@ public Task(Task t)
                 return false;
             }
             Task t = obj as Task;
-            return (TaskInstance.Equals(t.TaskInstance) && GetActionVector().SequenceEqual(t.GetActionVector()) && GetStartIndex() == t.GetStartIndex() && GetEndIndex() == t.GetEndIndex()) ;
+            return (TaskInstance.Equals(t.TaskInstance) && GetActionVector().SequenceEqual(t.GetActionVector()) && GetStartIndex() == t.GetStartIndex() && GetEndIndex() == t.GetEndIndex());
         }
 
         public override int GetHashCode()
@@ -134,12 +118,13 @@ public Task(Task t)
             int hash = TaskInstance.GetHashCode();
             //Start index times 10 so that it is a whole number. (0,5->5). 
             //negative hashcodes are okay. 
-            hash = hash * 11 + (int)(GetStartIndex()*10) + (int)(GetEndIndex()*10);
+            hash = hash * 11 + (int)(GetStartIndex() * 10) + (int)(GetEndIndex() * 10);
             int i = 1;
-            foreach (bool a in ActionVector) {
-                if (a) hash = hash + 7*i; //for action vector 0 1 0 1 we add 7*2 and 7*4.
+            foreach (bool a in ActionVector)
+            {
+                if (a) hash = hash + 7 * i; //for action vector 0 1 0 1 we add 7*2 and 7*4.
                 i++;
-            }     
+            }
             return hash;
         }
 
