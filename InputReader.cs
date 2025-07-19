@@ -15,15 +15,15 @@ namespace PlanValidation1
     {
         enum State { inMethod, inSubtasks, nowhere, inTaskInfo, ordering, conditions, inAction, actPrecond, actEffects, inTypes, inConstants, betweenConditions };
         enum Ordering { Preset, Later, None };
-        bool TOWasTrueBeforeThisTask = false; //Sometimes a user might name task for ordering later but won't give any order for ordering later. This variable is so we catch that. 
+        bool TOWasTrueBeforeThisTask=false; //Sometimes a user might name task for ordering later but won't give any order for ordering later. This variable is so we catch that. 
         bool firstOrderingLaterCondition = false; //This is true if this is the first condition for ordering later. 
         public List<ActionType> globalActions;
-        public Dictionary<String, List<TaskType>> alltaskTypes;
+        public Dictionary<String,List<TaskType>> alltaskTypes;
         public List<Rule> allRules;
         public List<Rule> emptyRules = new List<Rule>();
         public List<Action> myActions = new List<Action>();
-        public Dictionary<String, ConstantType> allConstantTypes = new Dictionary<string, ConstantType>();
-        public Dictionary<String, Constant> allConstants = new Dictionary<String, Constant>();
+        public Dictionary<String,ConstantType> allConstantTypes = new Dictionary<string, ConstantType>();
+        public Dictionary<String,Constant> allConstants = new Dictionary<String, Constant>();
         bool forall = false;
         Constant forallConst = null; //INFO so far we just allow one. 
 
@@ -141,7 +141,7 @@ namespace PlanValidation1
                     }
                     if (line.Contains(":parameters"))
                     {
-                        HandleParameters(line, ref curRule, ref paramTypeInfo);
+                        HandleParameters(line, ref curRule, ref paramTypeInfo);                        
                     }
                     else if (line.Contains(":task"))
                     {
@@ -283,7 +283,7 @@ namespace PlanValidation1
                             namedTasks.Add(tupleFull);
                             TaskType t = FindTask(tupleTaskName.Item1, alltaskTypes);  //Finds the task in lists of all tasks. 
                             if (t == tupleTaskName.Item1)
-                            {
+                            {                                
                                 if (alltaskTypes.ContainsKey(t.Name)) alltaskTypes[t.Name].Add(t);
                                 else
                                 {
@@ -307,7 +307,7 @@ namespace PlanValidation1
                             curRule.AllVarsTypes = paramTypeInfo.Values.Select(x => x.Type).ToList();
                         }
                         //At least one subtask is not fully ordered. 
-                        if (Globals.TOIndicator && ordering == Ordering.None && curSubtaskList?.Count > 1) Globals.TOIndicator = false;
+                        if (Globals.TOIndicator && ordering == Ordering.None && curSubtaskList?.Count > 1) Globals.TOIndicator = false;                        
                         CreateConditions(curRule, preconditions);
                         CreateBetweenConditions(curRule, betweenConditions);
                         curRule.TaskTypeArray = curSubtaskList.ToArray();
@@ -353,7 +353,7 @@ namespace PlanValidation1
                             Globals.TOIndicator = true;
 
                         }
-                        CreatePartialOrder(line, namedTasks, ref lastRule);
+                        CreatePartialOrder(line, namedTasks, ref lastRule);                       
 
                     }
                     if (line.Trim().Equals(")") || doneOrder)
@@ -362,13 +362,13 @@ namespace PlanValidation1
                         namedTasks = new List<Tuple<TaskType, string, int>>();
                         state = State.nowhere;
                         ordering = Ordering.None;
-                        if (Globals.TOIndicator && !IsFullyOrdered(lastRule)) Globals.TOIndicator = false;
+                        if (Globals.TOIndicator && !IsFullyOrdered(lastRule)) Globals.TOIndicator=false;
                         lastRule.FinishPartialOrder();
                     }
                 }
                 else if (state == State.inAction)
                 {
-                    Dictionary<String, Constant> actVars = new Dictionary<String, Constant>();
+                    Dictionary<String,Constant> actVars = new Dictionary<String, Constant>();
                     if (line.Contains(":action"))
                     {
                         //This is here because some atcions might nto have preconditions or effects so the normal finish for actions after effects does not apply. But if it is followed by another action we can use this one.
@@ -394,8 +394,7 @@ namespace PlanValidation1
                     else if (line.Contains(":precondition"))
                     {
                         state = State.actPrecond;
-                    }
-                    else if (line.Contains(":effect"))
+                    } else if (line.Contains(":effect"))
                     {
                         state = State.actEffects; // in case the action has no preconditions but only effects. 
                     }
@@ -442,7 +441,7 @@ namespace PlanValidation1
                             }
                         }
                     }
-                    if (doneActEff)
+                    if ( doneActEff)
                     {
                         //warnign there used to be if line.Trim().Equals(")") or the done actEff but because if this is followed by another atcion or its the last action we will put it in the gllobal actions we dont need to mention it separately
                         if (curActionType.Name != null) globalActions.Add(curActionType);
@@ -483,7 +482,7 @@ namespace PlanValidation1
         /// <param name="allConstants"></param>
         /// <param name="allConstantTypes"></param>
         /// 
-        private void GetConstants(string line, ref Dictionary<String, Constant> allConstants, Dictionary<String, ConstantType> allConstantTypes)
+        private void GetConstants(string line, ref Dictionary<String, Constant> allConstants, Dictionary<String,ConstantType> allConstantTypes)
         {
             line = CleanUpInput(line, new List<string>() { "(:constants", "(and", "(", ")" }, ";;");
             string[] parts = line.Trim().Split(' ');
@@ -507,7 +506,7 @@ namespace PlanValidation1
                 if (m != null && m != "-")
                 {
                     Constant c1 = new Constant(m, t);
-                    allConstants.Add(c1.Name, c1);
+                    allConstants.Add(c1.Name,c1);
                 }
             }
         }
@@ -518,7 +517,7 @@ namespace PlanValidation1
         /// Can also be used to ignore all types.        ///
         /// </summary>
         /// <param name="types"></param>
-        private void FinishTypeHierarchy(ref Dictionary<String, ConstantType> types)
+        private void FinishTypeHierarchy(ref Dictionary<String,ConstantType> types)
         {
             ConstantType any = new ConstantType("any");
             foreach (ConstantType c in types.Values)
@@ -528,12 +527,12 @@ namespace PlanValidation1
                 c.CreateDescendantLine();
             }
             any.CreateDescendantLine();
-            types.Add("any", any);
+            types.Add("any",any);
         }
 
         //line looks like this:
         //waterco powerco - callable
-        private void CreateTypeHieararchy(string line, Dictionary<String, ConstantType> types)
+        private void CreateTypeHieararchy(string line, Dictionary<String,ConstantType> types)
         {
             string[] parts = line.Trim().Split(' ');
             if (line.Trim().Equals("(:types")) return;
@@ -543,7 +542,7 @@ namespace PlanValidation1
             {
                 //This type does not exist create it. 
                 t = new ConstantType(s);
-                types.Add(t.Name, t);
+                types.Add(t.Name,t);
             }
             parts[parts.Length - 1] = null;
             foreach (String m in parts)
@@ -554,7 +553,7 @@ namespace PlanValidation1
                     if (t1 == null)
                     {
                         t1 = new ConstantType(m);
-                        types.Add(t1.Name, t1);
+                        types.Add(t1.Name,t1);
                     }
                     t1.AddAncestor(t);
                     t.AddChild(t1);
@@ -562,7 +561,7 @@ namespace PlanValidation1
             }
         }
 
-        private ConstantType ContainsType(Dictionary<String, ConstantType> types, String name)
+        private ConstantType ContainsType(Dictionary<String,ConstantType> types, String name)
         {
             if (types.ContainsKey(name)) return types[name];
             return null;
@@ -625,7 +624,7 @@ namespace PlanValidation1
                 for (int i = 1; i + 2 < parts.Length; i += 3)
                 {
                     name = parts[i];
-                    ConstantType t = ContainsType(allConstantTypes, parts[i + 2]);
+                    ConstantType t = ContainsType(allConstantTypes,parts[i + 2]);
                     if (t == null) t = ContainsType(allConstantTypes, "any");
                     forallConst = new Constant(name, t);
                     vars.Add("!" + name);
@@ -674,14 +673,14 @@ namespace PlanValidation1
                 line = line.Replace("(not", "");
                 isPos = false;
             }
-            line = CleanUpInput(line, new List<string>() { "(and ", ":precondition ", ":effect", ")", "(", }, ";;");
+            line = CleanUpInput(line, new List<string>() {"(and ",":precondition ", ":effect", ")", "(", }, ";;");
             string[] parts = line.Trim().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
             if (parts.Length < 1 || line.Trim().Equals("and")) return null;
             string name = parts[0];
             if (forall)
             {
                 forall = false;
-                name = "!" + name;
+                name = "!"+name ;
             }
             if (name.Trim().Equals("exists")) return null;//Currently ignores both exist conditions, which is proper behaviour. 
             if (name.Trim().Equals("forall"))
@@ -690,7 +689,7 @@ namespace PlanValidation1
                 for (int i = 1; i + 2 < parts.Length; i += 3)
                 {
                     name = parts[i];
-                    ConstantType t = ContainsType(allConstantTypes, parts[i + 2]);
+                    ConstantType t = ContainsType(allConstantTypes,parts[i + 2]);
                     if (t == null) t = ContainsType(allConstantTypes, "any");
                     forallConst = new Constant("!" + name, t);
                     //We will add the forallconstant to list of constants
@@ -711,8 +710,8 @@ namespace PlanValidation1
                     {
                         //this is a constant or a forall condition
                         //First we check if it is already in our list of constants.
-                        ConstantType t = ContainsType(allConstantTypes, var);
-                        if (t == null) t = ContainsType(allConstantTypes, "any");
+                        ConstantType t = ContainsType(allConstantTypes,var);
+                        if (t == null) t = ContainsType(allConstantTypes,"any");
                         Constant c = new Constant(var, t);
                         int index = constants.FindIndex(x => x.Name == var);
                         if (index == -1)
@@ -747,17 +746,17 @@ namespace PlanValidation1
         /// <param name="tT"></param>
         /// <param name="alltaskTypes"></param>
         /// <returns></returns>
-        private TaskType FindTask(TaskType tT, Dictionary<String, List<TaskType>> alltaskTypes)
+        private TaskType FindTask(TaskType tT, Dictionary<String,List<TaskType>> alltaskTypes)
         {
             if (alltaskTypes.ContainsKey(tT.Name))
-            {
+            {                
                 foreach (TaskType t in alltaskTypes[tT.Name])
                 {
                     if (t.NumOfVariables == tT.NumOfVariables) return t;
                 }
             }
             return tT;
-
+            
         }
 
         //Creates proper rule conditions.
@@ -827,7 +826,7 @@ namespace PlanValidation1
         // line looks like this: (contentOf ?b ?c)
         // or like this: (not(= ?b ?b2))        
         //returns condition and bool is true if condition is positive false, if negative. 
-        private Tuple<Term, bool> CreateCondition(string line, ref Dictionary<String, Constant> methodInfo, Dictionary<String, Constant> allConstants)
+        private Tuple<Term, bool> CreateCondition(string line, ref Dictionary<String, Constant> methodInfo, Dictionary<String,Constant> allConstants)
         {
             line = line.Trim();
             if (forall) forall = false; //Last condition was for all now is the one it applies to.
@@ -849,11 +848,11 @@ namespace PlanValidation1
                 for (int i = 1; i + 2 < parts.Length; i += 3)
                 {
                     name = parts[i];
-                    ConstantType t = ContainsType(allConstantTypes, parts[i + 2]);
+                    ConstantType t = ContainsType(allConstantTypes,parts[i + 2]);
                     if (t == null) t = ContainsType(allConstantTypes, "any");
                     forallConst = new Constant("!" + name, t);
-                    if (methodInfo == null) { methodInfo = new Dictionary<String, Constant>(); } //this was added because we had a forall condition on method with no parameters.
-                    methodInfo.Add(forallConst.Name, forallConst);
+                    if (methodInfo == null) { methodInfo = new Dictionary<String,Constant>(); } //this was added because we had a forall condition on method with no parameters.
+                    methodInfo.Add(forallConst.Name,forallConst);
                 }
                 return null;
             }
@@ -871,7 +870,7 @@ namespace PlanValidation1
                         //This constant is not in the rules paramaters. We should add it there. 
                         c = FindConstant(s, allConstants);
                         if (c == null) c = new Constant(s, any);
-                        methodInfo.Add(c.Name, c);
+                        methodInfo.Add(c.Name,c);
                     }
                 }
                 conVars.Add(c);
@@ -888,7 +887,7 @@ namespace PlanValidation1
         /// </summary>
         /// <param name="line"></param>
         /// <returns></returns>
-        private Dictionary<String, Constant> GetParameters(string line, Dictionary<String, ConstantType> types)
+        private Dictionary<String,Constant> GetParameters(string line, Dictionary<String,ConstantType> types)
         {
             Dictionary<String, Constant> parameters = new Dictionary<String, Constant>();
             line = CleanUpInput(line, new List<string>() { "(and ", ":parameters ", "(", ")" }, ";;");
@@ -914,8 +913,8 @@ namespace PlanValidation1
                             foreach (String name in curNames)
                             {
                                 String name2 = name;
-                                if (Globals.IgnoreCase) name2 = name2.ToLower(new CultureInfo("en-US", false));
-                                parameters.Add(name2, new Constant(name2, type));
+                                if (Globals.IgnoreCase) name2= name2.ToLower(new CultureInfo("en-US", false));
+                                parameters.Add(name2,new Constant(name2, type));
                             }
                         }
                         curNames = new List<string>();
@@ -936,11 +935,11 @@ namespace PlanValidation1
             parts[0] = parts[0].Trim();
             Tuple<TaskType, string, int> tuple1 = namedTasks.First(c => c.Item2.Equals(parts[0]));
             Tuple<TaskType, string, int> tuple2 = namedTasks.First(c => c.Item2.Equals(parts[1]));
-            curRule.AddPartialCondition(tuple1.Item3, tuple2.Item3, true);
+            curRule.AddPartialCondition(tuple1.Item3, tuple2.Item3,true);
         }
 
         //The line loks like this: st1 (add cream ?b1))
-        private Tuple<TaskType, String> CreateNamedTaskType(string line, ref Dictionary<String, Constant> methodParam, out List<int> refList, Dictionary<String, Constant> fixedConstants)
+        private Tuple<TaskType, String> CreateNamedTaskType(string line, ref Dictionary<String, Constant> methodParam, out List<int> refList, Dictionary<String,Constant> fixedConstants)
         {
             line = line.Replace("(and ", "("); // if the line starts with (and we should ignore it. 
             int index = line.IndexOf(";;"); //Removes everythign after ;; which symbolizes comment
@@ -958,10 +957,10 @@ namespace PlanValidation1
         ////The line loks like this: :task (makeNoodles ?n ?p)
         ///or like this:  (add water ?p)
         ///Depends on whether this is the main task of rule or subtask. 
-        private TaskType CreateTaskType(string line, ref Dictionary<String, Constant> methodParam, out List<int> refList, Dictionary<String, Constant> fixedConstants)
+        private TaskType CreateTaskType(string line, ref Dictionary<String, Constant> methodParam, out List<int> refList, Dictionary<String,Constant> fixedConstants)
         {
             refList = new List<int>();
-            line = CleanUpInput(line, new List<string>() { ":subtasks", "(and", ":task ", "(", ")" }, ";;");
+            line = CleanUpInput(line, new List<string>() { ":subtasks","(and", ":task ", "(", ")" }, ";;");
             string[] parts = line.Trim().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
             if (parts.Length == 0)
             {
@@ -982,8 +981,8 @@ namespace PlanValidation1
                     if (methodParam != null)
                     {
                         string param2 = param;
-                        if (Globals.IgnoreCase) param2 = param2.ToLower(new CultureInfo("en-US", false));
-                        c1 = Globals.NullLookUp(methodParam, param2);
+                        if (Globals.IgnoreCase) param2= param2.ToLower(new CultureInfo("en-US", false));
+                        c1 = Globals.NullLookUp(methodParam,param2);
                         if (c1 != null)
                         {
                             refList.Add(methodParam.Values.ToList().IndexOf(c1));
@@ -998,9 +997,9 @@ namespace PlanValidation1
                             Console.WriteLine("Warning: We were given constant that does not exist {0}. Please describe this constant in the domain under the :constants tag. ", param);
                             ConstantType a = ContainsType(allConstantTypes, "any");
                             c = new Constant(param, a);
-                            fixedConstants.Add(c.Name, c);
+                            fixedConstants.Add(c.Name,c);
                         }
-                        methodParam.Add(c.Name, c);
+                        methodParam.Add(c.Name,c);
                         refList.Add(methodParam.Count - 1);
                     }
                 }
@@ -1016,11 +1015,11 @@ namespace PlanValidation1
         /// <param name="param"></param>
         /// <param name="fixedConstants"></param>
         /// <returns></returns>
-        private Constant FindConstant(string param, Dictionary<String, Constant> fixedConstants)
+        private Constant FindConstant(string param, Dictionary<String,Constant> fixedConstants)
         {
             if (fixedConstants == null) return null;
             if (Globals.IgnoreCase) param = param.ToLower(new CultureInfo("en-US", false));
-            Constant c = Globals.NullLookUp(fixedConstants, param);
+            Constant c = Globals.NullLookUp(fixedConstants, param);          
             return c;
         }
 
@@ -1063,7 +1062,7 @@ namespace PlanValidation1
                         ActionType aT = FindActionType(allActionTypes, action);
                         aT.Instances.Add(action);
                         action.ActionType = aT;
-                        action.CreateConditions(allActionTypes, allConstants);
+                        action.CreateConditions(allActionTypes, allConstants);                        
                         myActions.Add(action);
                     }
                 }
@@ -1104,7 +1103,7 @@ namespace PlanValidation1
         {
             if (line.Contains(":parameters"))
             {
-                line = line.Replace(":htn ", "");
+                line=line.Replace(":htn ", "");
                 paramTypeInfo = GetParameters(line, allConstantTypes);
                 if (paramTypeInfo != null)
                 {
@@ -1120,7 +1119,7 @@ namespace PlanValidation1
         /// </summary>
         /// <param name="fileName"></param>
         public List<Term> ReadProblem(String fileName, Dictionary<String, ConstantType> allConstantTypes, ref Dictionary<String, Constant> constants, out Rule goalRule, out List<Term> goalState)
-        {
+        {            
             goalState = new List<Term>();
             goalRule = new Rule();
             Dictionary<String, Constant> inputConstants = new Dictionary<String, Constant>();
@@ -1138,7 +1137,7 @@ namespace PlanValidation1
             List<TaskType> curSubtaskList = new List<TaskType>();
             Ordering ordering = Ordering.None;
             List<Tuple<TaskType, string, int>> namedTasks = new List<Tuple<TaskType, string, int>>();
-            Dictionary<String, Constant> paramTypeInfo = new Dictionary<String, Constant>();
+            Dictionary<String,Constant> paramTypeInfo = new Dictionary<String, Constant>();
             while ((line = file.ReadLine()) != null)
             {
                 if (Globals.IgnoreCase) line = line.ToLower(new CultureInfo("en-US", false));
@@ -1147,14 +1146,14 @@ namespace PlanValidation1
                     //return conditions
                     inInit = false;
                 }
-
+                
                 if (line.Contains(":init"))
                 {
                     //We are now in inInit so if there was a goal task we are done with it. 
                     if (Globals.KnownRootTask)
                     {
 
-                        goalRule = FinishGoalRule(goalRule, referenceLists, paramTypeInfo);
+                        goalRule = FinishGoalRule(goalRule,referenceLists,paramTypeInfo);
                         inSubtasks = false;
                     }
                     inInit = true;
@@ -1208,25 +1207,21 @@ namespace PlanValidation1
                         AddNewConstants(inputConstants, ref constants); //Adds inputconstants in constants. Check uniqueness and substitute constantswith type any if possible.                         
                     }
                     GetConstants(line, ref inputConstants, allConstantTypes);
-                }
-                else if (inGoalTask && Globals.KnownRootTask)
+                } else if (inGoalTask && Globals.KnownRootTask)
                 {
-                    int num = 0;
+                    int num = 0;                                                     
                     //parameters are always just one line even if they are in the problem file. 
                     if (line.Contains(":parameters"))
-                    {
+                    {                        
                         HandleParameters(line, ref goalRule, ref paramTypeInfo);
                     }
-                    else if (line.Contains("ordering") || inOrdering)
-                    {
+                    else if (line.Contains("ordering") || inOrdering) {                         
                         inSubtasks = false;
                         if (!line.Trim().Equals(")"))
                         {
-                            if (namedTasks?.Count < 1)
-                            {
-                                Console.WriteLine("Warning: There is \"ordering()\" in problem file, but no actual ordering.");
-                            }
-                            else
+                            if (namedTasks?.Count < 1) {
+                                Console.WriteLine("Warning: There is \"ordering()\" in problem file, but no actual ordering.");                                
+                            } else
                             {
                                 CreatePartialOrder(line, namedTasks, ref goalRule);
                             }
@@ -1240,9 +1235,8 @@ namespace PlanValidation1
                         }
 
                     }
-                    if (Globals.KnownRootTask && line.Contains("ordered-subtasks")) ordering = Ordering.Preset;
-                    if (Globals.KnownRootTask && line.Contains("subtasks"))
-                    {
+                    if (Globals.KnownRootTask &&  line.Contains("ordered-subtasks")) ordering = Ordering.Preset;
+                    if (Globals.KnownRootTask && line.Contains("subtasks")){
                         //This means that first task cant be on the same line as subtasks. 
                         inSubtasks = true;
                         //If the line looks like this: :subtasks (and (t__top))
@@ -1255,12 +1249,12 @@ namespace PlanValidation1
                         line = line.Trim().Replace("))", ")");
                     }
                     if (line.Trim().Equals(")") && inSubtasks)
-                    {
-                        inSubtasks = false;
-                    }
+                        {
+                            inSubtasks = false;
+                        }                        
                     if (Globals.KnownRootTask && inSubtasks && line != "")
-                    {
-                        if (unknownOrdering && ordering != Ordering.Preset)
+                    {                        
+                        if (unknownOrdering && ordering != Ordering.Preset )
                         {
                             //Only check this if ordering is not preset. Cause then I know the ordering. 
                             int parenthesisCount = line.Count(x => x == '(');
@@ -1270,10 +1264,10 @@ namespace PlanValidation1
                         }
                         List<int> refList = new List<int>();
                         TaskType tT;
-                        if (ordering == Ordering.None || ordering == Ordering.Preset)
+                        if (ordering==Ordering.None || ordering==Ordering.Preset)
                         {
                             tT = CreateTaskType(line, ref paramTypeInfo, out refList, allConstants);
-                            if (tT != null) tT = FindTask(tT, alltaskTypes);
+                            if (tT!=null) tT = FindTask(tT, alltaskTypes);
                         }
                         else
                         {
@@ -1287,17 +1281,17 @@ namespace PlanValidation1
                         {
                             curSubtaskList.Add(tT);
                             referenceLists.Add(refList);
-                            goalRule.TaskTypeArray = curSubtaskList.ToArray();
+                            goalRule.TaskTypeArray = curSubtaskList.ToArray();                            
                         }
-                    }
-
+                    }                   
+                    
                 }
             }
             return conditions;
         }
 
-        private Rule FinishGoalRule(Rule goalRule, List<List<int>> referenceLists, Dictionary<String, Constant> paramTypeInfo)
-        {
+        private Rule FinishGoalRule(Rule goalRule, List<List<int>> referenceLists, Dictionary<String,Constant> paramTypeInfo)
+        {            
             if (paramTypeInfo != null)
             {
                 goalRule.AllVars = paramTypeInfo.Keys.ToList();
@@ -1314,14 +1308,14 @@ namespace PlanValidation1
             return goalRule;
         }
 
-        private void AddNewConstants(Dictionary<String, Constant> inputConstants, ref Dictionary<String, Constant> constants)
+        private void AddNewConstants(Dictionary<String,Constant> inputConstants, ref Dictionary<String, Constant> constants)
         {
             foreach (Constant c in inputConstants.Values)
             {
-                Constant sameName = Globals.NullLookUp(constants, c.Name);
-                if (sameName == null) constants.Add(c.Name, c); //If my type is subset of a previous type. We change it. 
+                Constant sameName = Globals.NullLookUp(constants,c.Name);
+                if (sameName==null) constants.Add(c.Name,c); //If my type is subset of a previous type. We change it. 
                 else
-                {
+                {                    
                     if (sameName.Type.IsAncestorTo(c.Type))
                     {
                         sameName.Type = c.Type;
@@ -1332,7 +1326,7 @@ namespace PlanValidation1
         }
 
         //The line loks like this: (contentof pot1 contentpot1)
-        private Term CreateStateCondition(string line, ref Dictionary<String, Constant> methodInfo, Dictionary<String, Constant> allConstants)
+        private Term CreateStateCondition(string line, ref Dictionary<String,Constant> methodInfo, Dictionary<String, Constant> allConstants)
         {
             Tuple<Term, bool> tupleC = CreateCondition(line, ref methodInfo, allConstants);
             if (tupleC != null)
@@ -1375,10 +1369,10 @@ namespace PlanValidation1
             }
         }
 
-        public List<TaskType> TransformToList(Dictionary<String, List<TaskType>> allTaskTypes)
+        public List<TaskType> TransformToList(Dictionary<String,List<TaskType>> allTaskTypes)
         {
-            List<TaskType> output = new List<TaskType>();
-            foreach (List<TaskType> list in alltaskTypes.Values)
+            List<TaskType> output= new List<TaskType>();
+            foreach(List<TaskType> list in alltaskTypes.Values)
             {
                 output.AddRange(list);
             }

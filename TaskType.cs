@@ -22,13 +22,13 @@ namespace PlanValidation1
         public int NumOfVariables; // Number of variables. So that load(X,Y) and load(X,Y,Z) are different TaskTypes
         public HashSet<Task> Instances;
         public int MinTaskLength;
+        private object goalRule;
 
         /// <summary>
         /// If true then this is either root task or some task to which root task decomposes.
         /// If this is false, it is a separate rule/task, so it won't help me get desired root task. Therefor I can remove this rule. 
         /// </summary>
         internal bool reachable=false;
-        private object goalRule;
 
         public TaskType(String name, int numOfVars)
         {
@@ -81,16 +81,16 @@ namespace PlanValidation1
 
         public void AddInstance(Task t)
         {
-            if (!Instances.Contains(t)) Instances.Add(t);
+            Instances.Add(t); // Because this is a hashset it automtically wont allow duplications. 
         }
 
         /// <summary>
         /// Tells the rules that this task is now ready. If the rule is full (all tasks are ready it returns it otherwise returns null)
         /// </summary>
         /// <returns></returns>
-        private Rule ActivateRule(Rule r, int i,int iteration)
+        private Rule ActivateRule(Rule r, int i,int CreationNumber)
         {
-            bool fullyActivated = r.Activate(this, i, iteration);
+            bool fullyActivated = r.Activate(this, i, CreationNumber);
             if (fullyActivated) return r;
             else return null;
         }
@@ -100,13 +100,13 @@ namespace PlanValidation1
         /// 
         /// </summary>
         /// <returns></returns>
-        public List<Rule> ActivateRules(int iteration)
+        public HashSet<Rule> ActivateRules(int CreationNumber)
         {
             int instancesCount = Instances.Count;
-            List<Rule> rulesReadyToGo = new List<Rule>();
+            HashSet<Rule> rulesReadyToGo = new HashSet<Rule>();
             foreach (Rule r in Rules)
             {
-                Rule r2 = ActivateRule(r, instancesCount,iteration);
+                Rule r2 = ActivateRule(r, instancesCount,CreationNumber);
                 if (r2 != null) rulesReadyToGo.Add(r2);
             }
             return rulesReadyToGo;
@@ -123,17 +123,18 @@ namespace PlanValidation1
         /// <summary>
         /// Marks itself and every main rule as reached.
         /// </summary>
-        internal void MarkAsReached()
+        internal void MarkAsReached(int i)
         {
             if (!reachable)
             {
                 reachable = true;
                 foreach (Rule r in MainRules)
                 {
-                    r.MarkAsReached();
+                    r.MarkAsReached(i);
                 }
+               
             }
-            
+            reachable = true;
         }
     }
 }

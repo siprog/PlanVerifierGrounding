@@ -24,15 +24,16 @@ namespace PlanValidation1
         }
         internal TaskType[] TaskTypeArray;
         /// <summary>
-        /// If true then this rule is either connected to the root task or to some task to whch root task deocmposes.
+        /// If true then this rule is either connected to the root task or to some task to which root task decomposes.
         /// If this is false, it is a separate rule/task, so it won't help me get desired root task. Therefor I can remove this rule. 
         /// </summary>
         internal bool reachable = false;
+        internal int minDistanceToGoalTask;
         /// <summary>
         /// Has 1 is the given task type has at least one task instance 
         /// </summary>
         bool[] TaskTypeActivationArray;
-        int[] TaskTypeActivationIterationArray;
+        int[] TaskTypeActivationCreationNumberArray;
         int[] TaskMinLegthArray; //This is set to fixed 100000. 
         int[] minOrderedTaskPositionAfter;
         int[] minOrderedTaskPosition;
@@ -107,6 +108,8 @@ namespace PlanValidation1
 
         private SubtaskFillingHeuristic myHeuristic;
 
+        public int LastCreationNumber;
+
         public Rule()
         {
             posPreConditions = new List<Tuple<int, string, List<int>>>();
@@ -115,6 +118,7 @@ namespace PlanValidation1
             negPostConditions = new List<Tuple<int, string, List<int>>>();
             posBetweenConditions = new List<Tuple<int, int, string, List<int>>>();
             negBetweenConditions = new List<Tuple<int, int, string, List<int>>>();
+            LastCreationNumber = 0;
         }
 
         //It as given everything it wil be given. It should fill up the rest.
@@ -122,7 +126,7 @@ namespace PlanValidation1
         internal void Finish(List<List<int>> refList)
         {
             TaskTypeActivationArray = new bool[TaskTypeArray.Length];
-            TaskTypeActivationIterationArray = new int[TaskTypeArray.Length];
+            TaskTypeActivationCreationNumberArray = new int[TaskTypeArray.Length];
             TaskMinLegthArray = Enumerable.Repeat(100000, TaskTypeArray.Length).ToArray();
             minOrderedTaskPositionAfter = new int[TaskTypeArray.Length];
             minOrderedTaskPosition = new int[TaskTypeArray.Length];
@@ -165,17 +169,19 @@ namespace PlanValidation1
         /// <summary>
         /// Marks itself, it's main task and all it's subtasks as reached. 
         /// </summary>
-        public void MarkAsReached()
+        public void MarkAsReached(int dis)
         {
             if (reachable == false)
             {
+                minDistanceToGoalTask = dis;
                 reachable = true;
                 foreach (TaskType t in TaskTypeArray)
                 {
-                    t.MarkAsReached();
+                    t.MarkAsReached(dis+1);
                 }
-                if (!MainTaskType.reachable) mainTaskType.MarkAsReached();
+                if (!MainTaskType.reachable) mainTaskType.MarkAsReached(dis);
             }
+            else if (minDistanceToGoalTask > dis) minDistanceToGoalTask = dis;
         }
 
         private void CalculateTaskMinMaxPosition()
@@ -323,7 +329,7 @@ namespace PlanValidation1
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public bool Activate(TaskType t, int j, int iteration)
+        public bool Activate(TaskType t, int j, int creationNumber)
         {
             List<int> occurences = Enumerable.Range(0, TaskTypeArray.Length).Where(p => TaskTypeArray[p] == t).ToList();
             if (occurences.Count > j) return false; //I cant fill all instances of this subtask in this rule so it definitely canot be used.
@@ -333,7 +339,7 @@ namespace PlanValidation1
                 {
                     if (!TaskTypeActivationArray[i]) ActivatedTasks++; //If this activated the task (as in it was not ready before) it should increase the activated task counter.
                     TaskTypeActivationArray[i] = true;
-                    TaskTypeActivationIterationArray[i] = iteration; //Iterations always increases over time. So if I had a different task here in iteration 4, that's fine now I rewrite it to 6.
+                    TaskTypeActivationCreationNumberArray[i] = creationNumber; //creation number always increases over time. So if I had a different task here with creation umber 4, that's fine now I rewrite it to 6.
                     if (t.MinTaskLength < TaskMinLegthArray[i]) TaskMinLegthArray[i] = t.MinTaskLength;
                 }
                 if (!TaskMinLegthArray.Contains(100000))
@@ -411,7 +417,7 @@ namespace PlanValidation1
         /// Returns combination of taskInstances from task types that works with this rule.
         /// Empty rules can go through this they will not return any ruleInstance.
         /// </summary>
-        public HashSet<RuleInstance> GetRuleInstances(int size, List<Constant> allConstants, int iteration, int planSize)
+        public HashSet<RuleInstance> GetRuleInstances(int size, List<Constant> allConstants, int planSize)
         {            
             if (myHeuristic is InstancesHeuristic)
             {
@@ -428,11 +434,14 @@ namespace PlanValidation1
             Task MainTaskInstance = new Task(t, size, MainTaskType);
             List<Constant> emptyVars = FillFromAllVars(allConstants); //Fixed constants are fixed. Also forall constant is fixed. 
             List<Tuple<Task, Task[], List<Constant>>> ruleVariants = new List<Tuple<Task, Task[], List<Constant>>>();
-            for (int i = 0; i < TaskTypeActivationIterationArray.Length; i++)
+            for (int i = 0; i < TaskTypeActivationCreationNumberArray.Length; i++)
             {
-                if (TaskTypeActivationIterationArray[i] == iteration)
+                //LastCreationAttemptNumber number tells me when was the last time this rule tried to create a task.
+                //Any task with a higher creation number was created after and so is new. 
+                //We care about new tasks in order to not  repeat same task mutliple times. 
+                if (TaskTypeActivationCreationNumberArray[i] >= LastCreationNumber)
                 {                    
-                    List<Tuple<Task, Task[], List<Constant>>> newvariants = GetNextSuitableTask(TaskTypeArray[i], -1, i, emptyVars, new Task[TaskTypeArray.Length], planSize, iteration); //Trying with emptz string with all vars it has error in fill maintask //Should this be new empty string or is allvars ok?
+                    List<Tuple<Task, Task[], List<Constant>>> newvariants = GetNextSuitableTask(TaskTypeArray[i], -1, i, emptyVars, new Task[TaskTypeArray.Length], planSize); //Trying with emptz string with all vars it has error in fill maintask //Should this be new empty string or is allvars ok?
                     ruleVariants.AddRange(newvariants);                 
                 }
             }
@@ -536,17 +545,18 @@ namespace PlanValidation1
 
         //This finds all applicable tasks from list.
         //Tuple item1 is main task, list of subtasks and allvars.       
-        //will we have the same problem with conditions being of wrong type????
         //Index refers to position in heuristic. Mapped index referes to actual position in task type. Newindex also refers to actual position in tasktype. 
-        private List<Tuple<Task, Task[], List<Constant>>> GetNextSuitableTask(TaskType t, int index, int newindex, List<Constant> partialAllVars, Task[] subtasks, int planSize, int curIteration)
+        private List<Tuple<Task, Task[], List<Constant>>> GetNextSuitableTask(TaskType t, int index, int newindex, List<Constant> partialAllVars, Task[] subtasks, int planSize)
         {
             bool doingNewtask = false;
             int mappedIndex;
-            List<Task> unusedInstances = t.Instances.Except(subtasks).Distinct().ToList();
+            var unusedInstances = t.Instances.Except(subtasks).Distinct();
             if (index == -1) //Tasktype must be given as the new one. 
             {
                 doingNewtask = true;
-                unusedInstances = unusedInstances.Where(x => x.Iteration == curIteration).ToList();
+                //these unusedinstances originally had to list at the end does not seem to make much difference in speed whether its there or not.  
+                unusedInstances = unusedInstances.Where(x => x.CreationNumber >= LastCreationNumber);
+                   
                 index = newindex; //Temporarily we change the index so we don't have to change everything else and then after we switch it back to -1.
                 mappedIndex = newindex; //We still want to do the new subtask first. 
             }
@@ -556,8 +566,9 @@ namespace PlanValidation1
             }
             if (!doingNewtask && mappedIndex < newindex)    //This ensures that if I have rule with 2 newsubtasks I wont get it twice. 
                                                             //Anything after newindex can be both new and old. 
+                                                            //This line wont let me use last creation attempts but I have to use real numberr otherwise lets say I ahve two new taskss A, B but I tried A already. Well now I try with B onlz but this only allows A to use new instances after B and I still need that one instance. . 
             {
-                unusedInstances = unusedInstances.Where(x => x.Iteration < curIteration).ToList();
+                unusedInstances = unusedInstances.Where(x => x.CreationNumber < LastCreationNumber);
             }
             //If index is new index we keep ti the way it is because we want to go with that first. But after we go from left to right. So we start with index 0. But index 0 means I want the first subatssk according to my heuristic, which might be on position 5. So I keep info on position 5.
 
@@ -577,26 +588,26 @@ namespace PlanValidation1
                         //If this is explicitly before then for TO it must be right before. 
                         if (IsExplicitlyBefore(mappedIndex, oldIndex))
                         {
-                            if (Globals.TOIndicator) unusedInstances = unusedInstances.Where(x => Math.Floor(x.EndIndex) + 1 == Math.Ceiling(l.StartIndex)).ToList();
-                            else unusedInstances = unusedInstances.Where(x => Math.Floor(x.EndIndex) < Math.Ceiling(l.StartIndex)).ToList();
+                            if (Globals.TOIndicator) unusedInstances = unusedInstances.Where(x => Math.Floor(x.EndIndex) + 1 == Math.Ceiling(l.StartIndex));
+                            else unusedInstances = unusedInstances.Where(x => Math.Floor(x.EndIndex) < Math.Ceiling(l.StartIndex));
                         }
                         else if (IsExplicitlyBefore(oldIndex, mappedIndex))
                         {
-                            if (Globals.TOIndicator) unusedInstances = unusedInstances.Where(x => Math.Ceiling(x.StartIndex) == Math.Floor(l.EndIndex) + 1).ToList();
-                            else unusedInstances = unusedInstances.Where(x => Math.Ceiling(x.StartIndex) > Math.Floor(l.EndIndex)).ToList();
+                            if (Globals.TOIndicator) unusedInstances = unusedInstances.Where(x => Math.Ceiling(x.StartIndex) == Math.Floor(l.EndIndex) + 1);
+                            else unusedInstances = unusedInstances.Where(x => Math.Ceiling(x.StartIndex) > Math.Floor(l.EndIndex));
                         }
                         else if (Globals.CheckTransitiveConditions)
                         {
                             if (IsTransitivelyBefore(mappedIndex, oldIndex))
                             {
-                                unusedInstances = unusedInstances.Where(x => Math.Floor(x.EndIndex) < Math.Ceiling(l.StartIndex)).ToList(); //Our task must be before this subtask so I shall only look at possible instances that end before the other starts. 
+                                unusedInstances = unusedInstances.Where(x => Math.Floor(x.EndIndex) < Math.Ceiling(l.StartIndex)); //Our task must be before this subtask so I shall only look at possible instances that end before the other starts. 
                             }
                             else if (IsTransitivelyBefore(oldIndex, mappedIndex))
                             {
-                                unusedInstances = unusedInstances.Where(x => Math.Ceiling(x.StartIndex) > Math.Floor(l.EndIndex)).ToList(); //My task must start after task l.
+                                unusedInstances = unusedInstances.Where(x => Math.Ceiling(x.StartIndex) > Math.Floor(l.EndIndex)); //My task must start after task l.
                             }
                         }
-                        unusedInstances = unusedInstances.Where(x => Differs(x.GetActionVector(), l.GetActionVector())).ToList(); //NO problem on empty task becasue they return null.
+                        unusedInstances = unusedInstances.Where(x => Differs(x.GetActionVector(), l.GetActionVector())); //NO problem on empty task becasue they return null.
                                                                                                                                   //This is not the same as the sum check later. 
                     }
                 }
@@ -604,11 +615,11 @@ namespace PlanValidation1
 
             if (numOfOrderedTasksAfterThisTask?[mappedIndex] > 0)
             {
-                unusedInstances = unusedInstances.Where(x => Math.Floor(x.EndIndex) < planSize - minOrderedTaskPositionAfter[mappedIndex]).ToList(); //assuming plan size of action number. So for plan from 0-7 plan size is 8.
+                unusedInstances = unusedInstances.Where(x => Math.Floor(x.EndIndex) < planSize - minOrderedTaskPositionAfter[mappedIndex]); //assuming plan size of action number. So for plan from 0-7 plan size is 8.
             }
             if (numOfOrderedTasksBeforeThisTask?[mappedIndex] > 0)
             {
-                unusedInstances = unusedInstances.Where(x => Math.Ceiling(x.StartIndex) >= minOrderedTaskPosition[mappedIndex]).ToList(); //>= because if normal task is on position 0 and so is empyt atsk and normal task must be befroe empty task than its 0>=(1-1)
+                unusedInstances = unusedInstances.Where(x => Math.Ceiling(x.StartIndex) >= minOrderedTaskPosition[mappedIndex]); //>= because if normal task is on position 0 and so is empyt atsk and normal task must be befroe empty task than its 0>=(1-1)
             } //This shuld be okay even with empty tasks as they have minlegtharray of task 0
 
             //if index== newindex we didnt do anything and kept it that way.
@@ -634,11 +645,11 @@ namespace PlanValidation1
                         //We need to skip the newindex casue we already did it. So lets assume the new index has index 2 and its mappedIndex is 1. So we must make sure that we skip index=1
                         if (index + 1 == myHeuristic.ReverseMapping(newindex) && myHeuristic.ReverseMapping(newindex) < TaskTypeArray.Length - 1)
                         {//This makes us skip the new task. because we already picked the task for the new task. 
-                            newMyResult = GetNextSuitableTask(TaskTypeArray[myHeuristic.Mapping(index + 2)], index + 2, newindex, newAllVars, newSubTasks, planSize, curIteration);
+                            newMyResult = GetNextSuitableTask(TaskTypeArray[myHeuristic.Mapping(index + 2)], index + 2, newindex, newAllVars, newSubTasks, planSize);
                         }
                         else
                         {
-                            newMyResult = GetNextSuitableTask(TaskTypeArray[myHeuristic.Mapping(index + 1)], index + 1, newindex, newAllVars, newSubTasks, planSize, curIteration);
+                            newMyResult = GetNextSuitableTask(TaskTypeArray[myHeuristic.Mapping(index + 1)], index + 1, newindex, newAllVars, newSubTasks, planSize);
                         }
                         myResult.AddRange(newMyResult);
                     }
@@ -749,6 +760,57 @@ namespace PlanValidation1
                 }
             }
             return newAllVars;
+        }
+
+        public bool NullAcceptingSequenceEqual<T>(List<T> list1, List<T> list2)
+        {
+            if (list1 != null && list2 != null)
+                return list1.SequenceEqual(list2);
+
+            if (list1 == null && list2 == null) return true;
+            else return false;
+        }
+
+        public bool NullAcceptingSequenceEqual<T>(T[] array1, T[] array2)
+        {
+            if (array1 != null && array2 != null)
+                return array1.SequenceEqual(array2);
+
+            if (array1 == null && array2 == null) return true;
+            else return false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            Rule r = obj as Rule;
+            if (r.GetHashCode() != GetHashCode()) return false;
+            if (!MainTaskType.Equals(r.MainTaskType)) return false;            
+            return (NullAcceptingSequenceEqual(TaskTypeArray,r.TaskTypeArray) && NullAcceptingSequenceEqual(AllVars,r.AllVars) &&
+                NullAcceptingSequenceEqual(posPreConditions,r.posPreConditions) &&
+                NullAcceptingSequenceEqual(negPreConditions, r.negPreConditions) &&
+                NullAcceptingSequenceEqual(posBetweenConditions, r.posBetweenConditions) &&
+                NullAcceptingSequenceEqual(negBetweenConditions, r.negBetweenConditions) &&
+                NullAcceptingSequenceEqual(posPostConditions, r.posPostConditions) &&
+                NullAcceptingSequenceEqual(negPostConditions, r.negPostConditions));
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = MainTaskType.GetHashCode();            
+            hash = hash * 11 + (int)(posPreConditions.Count) + (int)(negPostConditions.Count * 10) + (int)(posBetweenConditions.Count) + (int)(negBetweenConditions.Count * 10);
+            if (TaskTypeArray != null)
+            {
+                foreach (TaskType t in TaskTypeArray)
+                {
+                    hash = hash + t.GetHashCode();
+                }
+            }
+            hash = hash * 3 + AllVars.Count();
+            return hash;
         }
 
         public override string ToString()

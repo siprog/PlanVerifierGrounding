@@ -15,7 +15,7 @@ namespace PlanValidation1
         public TaskType TaskType { get; }
         public double StartIndex; //For tasks that have subtasks this is just first one in ActionVector. For empty subtasks this is the slot, on which it's true-0,5. 
         public double EndIndex;
-        public int Iteration;
+        public int CreationNumber;
         public bool isSubtaskSomewhere; //Only used for analysis not for normal program. If a task is a subtask to some other task then this is true. 
 
         /// <summary>
@@ -165,7 +165,7 @@ public Task(Task t)
         public Task(Term taskInstance, bool[] vector, TaskType type, double StartIndex, double EndIndex, int iteration, int bufferZoneNumber)
            : this(taskInstance, vector, type, StartIndex, EndIndex)
         {
-            Iteration = iteration;
+            CreationNumber = iteration;
             BufferZoneIndex = bufferZoneNumber;
         }
 
