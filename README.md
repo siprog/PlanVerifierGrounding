@@ -11,7 +11,11 @@ ic - ignore case for all names and checks (IgnoreCase = true)
 h <0|1|2|3> choose subtask ordering heuristic: 0 = MostParameters 1 = LeastParameters 2 = Original 3 = Instances (for example h0)
 
 The program will automatically look for these files in the same folder as the exe file: 
+
 domain: domain.lisp
+
 plan: plan.txt
+
 problem: problem
+
 You can alternatively specify the path to the domain,problem and plan fields in arguments. If so then these have to be the first 3 arguments in this order: domain,problem,plan. The plan file must have the .txt file extension. 
