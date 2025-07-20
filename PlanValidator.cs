@@ -37,7 +37,7 @@ namespace PlanValidation1
         /// <param name="allConstants"></param>
         /// <param name="emptyRules"></param>
         /// <returns></returns>
-        public bool IsPlanValid(List<Action> plan, Dictionary<String,List<TaskType>> allTaskTypes, List<Term> initialConditions, List<Constant> allConstants, List<Rule> emptyRules, out int taskCount, Rule goalRule, List<Term> goalState, Stopwatch watch, HeuristicStructure applicableRules, out HashSet<Task> everytask,out int emptytasks)
+        public bool IsPlanValid(List<Action> plan, Dictionary<String, List<TaskType>> allTaskTypes, List<Term> initialConditions, List<Constant> allConstants, List<Rule> emptyRules, out int taskCount, Rule goalRule, List<Term> goalState, Stopwatch watch, HeuristicStructure applicableRules, out HashSet<Task> everytask, out int emptytasks)
         {
             emptytasks = 0;
             int iteration = 0;
@@ -56,7 +56,7 @@ namespace PlanValidation1
             if (timeline[0].SharesItems(plan[0].NegPreConditions))
             {
                 Console.WriteLine("This Action's {0} negative precondition is present. Plan is invalid.", plan[0]);
-                taskCount = 0;                
+                taskCount = 0;
                 return false;
             }
             //Forward run
@@ -79,7 +79,7 @@ namespace PlanValidation1
                     if (timeline[i].SharesItems(plan[i].NegPreConditions))
                     {
                         Console.WriteLine("This Action's {0} negative precondition is present. Plan is invalid.", plan[i]);
-                        taskCount = 0;                        
+                        taskCount = 0;
                         return false;
                     }
                 }
@@ -135,11 +135,11 @@ namespace PlanValidation1
 
                 //HashSet<RuleInstance> ruleInstances = r.GetRuleInstances(plan.Count, allConstants, plan.Count);
                 bool triedAllCombinations = false;
-                RuleInstance ruleInstance=r.GetNextRuleInstance(out triedAllCombinations,plan.Count);
+                RuleInstance ruleInstance = r.GetNextRuleInstance(out triedAllCombinations, plan.Count);
                 if (triedAllCombinations) applicableRules.Pop();
                 bool RuleWasCreatedInThisRound = false;
                 //Even though the rule instance might not produce a real task. We already tried all task combinatinons so in the next attempt we need something new. 
-                
+
 
                 if (ruleInstance != null)
                 {
@@ -349,7 +349,7 @@ namespace PlanValidation1
             foreach (Rule r in emptyRules)
             {
                 for (int i = 0; i < timeline.Count; i++)
-                {                    
+                {
                     //Constant[] emptyConst = new Constant[r.MainTaskType.NumOfVariables]; /
                     Constant[] emptyConst = new Constant[r.AllVars.Count];
                     List<Task> suitableTasks;
@@ -364,7 +364,7 @@ namespace PlanValidation1
                     {
                         foreach (Task t in suitableTasks)
                         {
-                           
+
                             if (!t.TaskInstance.Variables.Contains(null))
                             {
                                 RuleInstance rI = new RuleInstance(t, null, r, t.TaskInstance.Variables.Select(x => x.Name).ToList(), allConstants);
@@ -832,7 +832,7 @@ namespace PlanValidation1
             return -1;
         }
 
-        private TaskType FindTaskType(Action a, Dictionary<String,List<TaskType>> allTaskTypes)
+        private TaskType FindTaskType(Action a, Dictionary<String, List<TaskType>> allTaskTypes)
         {
             if (allTaskTypes.ContainsKey(a.ActionInstance.Name))
             {

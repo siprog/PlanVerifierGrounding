@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace PlanValidationExe
 {
-    
-    class ActionException: Exception
+
+    class ActionException : Exception
     {
         public ActionException(string s) : base(s)
         {

@@ -23,7 +23,7 @@ namespace PlanValidationExe
     /// If there are mutliple paths an argument determines whether we use min or max. 
     /// </summary>
     class DistanceToGoalHeuristic : SearchHeuristic
-    { 
+    {
 
         private Rule GoalRule;
 
@@ -51,7 +51,7 @@ namespace PlanValidationExe
         /// <param name=""></param>
         public DistanceToGoalHeuristic(List<Rule> allRules, Rule goalRule)
         {
-            GoalRule = goalRule;           
+            GoalRule = goalRule;
             rules = new Dictionary<Rule, int>();
             CalculateDistance(allRules);
 
@@ -67,27 +67,29 @@ namespace PlanValidationExe
         /// <param name="dis"></param>
         private void PropagateDown(Rule r, int dis)
         {
-            foreach(TaskType t in r.TaskTypeArray)
+            foreach (TaskType t in r.TaskTypeArray)
             {
-                foreach(Rule child in t.MainRules)
+                foreach (Rule child in t.MainRules)
                 {
                     if (!rules.ContainsKey(child))
                     {
-                        rules.Add(child, dis + 1);                        
+                        rules.Add(child, dis + 1);
                         PropagateDown(child, dis + 1);
-                    } else if (rules[child]>dis+1){
-                        rules[child] = dis + 1;                        
+                    }
+                    else if (rules[child] > dis + 1)
+                    {
+                        rules[child] = dis + 1;
                         PropagateDown(child, dis + 1);
                     }
                 }
             }
         }
-       
+
 
         private void CalculateDistance(List<Rule> allRules)
         {
-            
-            List<Rule> topRules= new List<Rule>();            
+
+            List<Rule> topRules = new List<Rule>();
             if (!Globals.KnownRootTask)
             {
                 topRules = allRules.Where(x => x.MainTaskType.Rules == null || x.MainTaskType.Rules.Count == 0).ToList();
@@ -95,9 +97,9 @@ namespace PlanValidationExe
                 {
                     rules.Add(top, 0);
                     PropagateDown(top, 0);
-                }               
-            }           
+                }
+            }
         }
-        
+
     }
 }

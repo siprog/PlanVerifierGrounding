@@ -23,16 +23,16 @@ namespace PlanValidation1
             {
                 domainS = args[0];
                 problemS = args[1];
-                planS = args[2];                
+                planS = args[2];
             }
             if (ContainsParameter(Globals.NotInterleavingS, args)) Globals.Interleaving = false;
             if (ContainsParameter(Globals.KnownGoalTaskS, args))
             {
-                Globals.KnownRootTask = true;                
+                Globals.KnownRootTask = true;
             }
             if (ContainsParameter(Globals.KnownGoalStateS, args))
             {
-                Globals.CheckGoalState= true;
+                Globals.CheckGoalState = true;
             }
             if (ContainsParameter(Globals.IgnoreCaseArgS, args))
             {
@@ -83,30 +83,30 @@ namespace PlanValidation1
                 Console.WriteLine(e.Message);
                 Console.WriteLine("Plan is invalid. ");
             }
-            
+
             Console.ReadKey();
         }
 
         private static void RunAnalysis(HashSet<Task> everyTask, int max)
         {
-            int isSubtaskSomewhere=0;
+            int isSubtaskSomewhere = 0;
             int[] depthArray = new int[max];
             int[] subtaskSomewherearray = new int[max];
-            foreach(Task t in everyTask)
+            foreach (Task t in everyTask)
             {
                 if (t.isSubtaskSomewhere)
                 {
                     isSubtaskSomewhere++;
-                   if (t.distancetoGoalTask!=-1) subtaskSomewherearray[t.distancetoGoalTask]++;
+                    if (t.distancetoGoalTask != -1) subtaskSomewherearray[t.distancetoGoalTask]++;
                 }
-                if (t.distancetoGoalTask!=-1) depthArray[t.distancetoGoalTask]++;
+                if (t.distancetoGoalTask != -1) depthArray[t.distancetoGoalTask]++;
             }
 
-            for( int i=0;i<depthArray.Count();i++)
+            for (int i = 0; i < depthArray.Count(); i++)
             {
                 Console.WriteLine("Number of tasks with distance {0} to goal task is {1} and of these thos ethat are someone elses subtasks are {2}", i, depthArray[i], subtaskSomewherearray[i]);
             }
-            Console.WriteLine("Number of tasks that are somebodys subtask is {0} and number of those that are not {1}", isSubtaskSomewhere,everyTask.Count()-isSubtaskSomewhere);
+            Console.WriteLine("Number of tasks that are somebodys subtask is {0} and number of those that are not {1}", isSubtaskSomewhere, everyTask.Count() - isSubtaskSomewhere);
         }
 
         public static bool ContainsParameter(string s, string[] args)

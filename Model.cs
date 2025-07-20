@@ -11,11 +11,11 @@ namespace PlanValidationExe
     {
         internal List<Term> InitialState { get; set; }
         internal List<Rule> EmptyRules { get; set; }
-        internal Dictionary<String,Constant> AllConstants { get; set; }
-        internal Dictionary<String,List<TaskType>> AllTaskTypes { get; set; }
+        internal Dictionary<String, Constant> AllConstants { get; set; }
+        internal Dictionary<String, List<TaskType>> AllTaskTypes { get; set; }
         internal List<Rule> Allrules { get; set; }
         internal List<ActionType> AllActionTypes { get; set; }
-        internal Dictionary<String,ConstantType> AllConstantTypes { get; set; }
+        internal Dictionary<String, ConstantType> AllConstantTypes { get; set; }
 
         /// <summary>
         /// Marks all task and rules that can be reached from decomposition of goal rule. 

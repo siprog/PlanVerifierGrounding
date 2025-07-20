@@ -97,7 +97,7 @@ namespace PlanValidation1
         public bool SharesAllItems(List<Term> conditions)
         {
             foreach (Term condition in conditions)
-            {               
+            {
                 if (!Conditions.Contains(condition))
                 {
                     Console.WriteLine(" This conditions {0} is not present.", condition);

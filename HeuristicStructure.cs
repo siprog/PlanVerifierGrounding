@@ -30,10 +30,10 @@ namespace PlanValidationExe
         /// </summary>
         /// <returns></returns>
         public Rule Pop()
-        {            
+        {
             if (currentMinRule == null) currentMinRule = findCurrentMin();
             Rule r = currentMinRule;
-            this.Remove(currentMinRule);            
+            this.Remove(currentMinRule);
             currentMinRule = null;
             return r;
         }

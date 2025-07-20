@@ -11,7 +11,7 @@ namespace PlanValidationExe
     /// </summary>
     public static class Globals
     {
-        public enum Heuristics { MostParameters = 0, LeastParameters = 1,Original=2, Instances=3}
+        public enum Heuristics { MostParameters = 0, LeastParameters = 1, Original = 2, Instances = 3 }
         /// <summary>
         /// Number used to reference constants for action. 
         /// </summary>
@@ -75,7 +75,7 @@ namespace PlanValidationExe
         /// <param name="dict"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static V NullLookUp<K,V>(Dictionary<K,V> dict, K key) where V: class
+        public static V NullLookUp<K, V>(Dictionary<K, V> dict, K key) where V : class
         {
             if (dict.ContainsKey(key)) return dict[key];
             else return null;

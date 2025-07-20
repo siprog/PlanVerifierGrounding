@@ -25,7 +25,7 @@ namespace PlanValidation1
         public List<Tuple<int, int, Term>> PosBetweenConditions { get; }
         public List<Tuple<int, int, Term>> NegBetweenConditions { get; }
 
-        readonly bool valid=true;
+        readonly bool valid = true;
 
         public RuleInstance(Task mainTask, List<Task> subtasks, Rule rule, List<String> allVars, List<Constant> allconstants)
         {
@@ -39,13 +39,13 @@ namespace PlanValidation1
             NegPostConditions = new List<Tuple<int, Term>>();
             PosBetweenConditions = new List<Tuple<int, int, Term>>();
             NegBetweenConditions = new List<Tuple<int, int, Term>>();
-            if (valid) valid = CreateConditions(rule.posBetweenConditions, PosBetweenConditions, allVars,rule.AllVarsTypes); //These go first as they are most likely to break the rule instance
-            if (valid) valid = CreateConditions(rule.negBetweenConditions, NegBetweenConditions, allVars,rule.AllVarsTypes); //TODO do between conditions with forall. 
+            if (valid) valid = CreateConditions(rule.posBetweenConditions, PosBetweenConditions, allVars, rule.AllVarsTypes); //These go first as they are most likely to break the rule instance
+            if (valid) valid = CreateConditions(rule.negBetweenConditions, NegBetweenConditions, allVars, rule.AllVarsTypes); //TODO do between conditions with forall. 
             if (valid) valid = CreateConditions(rule.posPreConditions, PosPreConditions, allVars, rule.AllVarsTypes, true, allconstants);
             if (valid) valid = CreateConditions(rule.negPreConditions, NegPreConditions, allVars, rule.AllVarsTypes, false, allconstants);
             if (valid) valid = CreateConditions(rule.posPostConditions, PosPostConditions, allVars, rule.AllVarsTypes, true, allconstants);
             if (valid) valid = CreateConditions(rule.negPostConditions, NegPostConditions, allVars, rule.AllVarsTypes, false, allconstants);
-            
+
         }
 
         public bool IsValid()
@@ -59,7 +59,7 @@ namespace PlanValidation1
         /// <param name="orderConditions"></param>
         /// <returns></returns>
         private bool CheckOrdering(List<Tuple<int, int>> orderConditions)
-        {            
+        {
             if (orderConditions?.Any() != true) return true; //If there is no ordering than it's ordered properly.
             foreach (Tuple<int, int> combo in orderConditions)
             {
@@ -79,7 +79,7 @@ namespace PlanValidation1
         public bool CheckEqualityOnly(List<Tuple<int, string, List<int>>> PostConditions1, List<String> allVars, bool pos)
         {
             bool valid = true;
-            foreach(var c in PostConditions1)
+            foreach (var c in PostConditions1)
             {
                 if (c.Item2.Contains("equal") || c.Item2.Equals("="))
                 {
@@ -105,7 +105,7 @@ namespace PlanValidation1
                 for (int i = 0; i < conditionTuple.Item3.Count; i++)
                 {
                     int num = conditionTuple.Item3[i];
-                    if (num < 0 || num >= allVars.Count) return false; 
+                    if (num < 0 || num >= allVars.Count) return false;
                     newVars[i] = new Constant(allVars[num], allVarsType[num]);
                     if (allVars[num].StartsWith("!"))
                     {
@@ -148,7 +148,7 @@ namespace PlanValidation1
                     foreach (Constant c in rightTypeConstants)
                     {
                         c.Name = c.Name.Replace("!", "");
-                        newVars[i] = c;                        
+                        newVars[i] = c;
                         Term condition = new Term(name, newVars.ToArray());
                         Tuple<int, Term> tuple = new Tuple<int, Term>(subtaskNum, condition);
                         solution.Add(tuple);
@@ -193,7 +193,7 @@ namespace PlanValidation1
         /// <param name="allVars"></param>
         /// <param name="allVarsType"></param>
         /// <returns></returns>
-        private bool CreateConditions(List<Tuple<int, int, string, List<int>>> BetweenConditions1, List<Tuple<int, int, Term>> BetweenConditions2, List<String> allVars,List<ConstantType> allVarsType)
+        private bool CreateConditions(List<Tuple<int, int, string, List<int>>> BetweenConditions1, List<Tuple<int, int, Term>> BetweenConditions2, List<String> allVars, List<ConstantType> allVarsType)
         {
             foreach (Tuple<int, int, string, List<int>> conditionTuple in BetweenConditions1)
             {
@@ -237,7 +237,7 @@ namespace PlanValidation1
             {
                 return false;
             }
-            if (!ConditionsEqual(PosPreConditions,r.PosPreConditions) || !ConditionsEqual(NegPreConditions, r.NegPreConditions) || !ConditionsEqual(PosBetweenConditions, r.PosBetweenConditions) || !ConditionsEqual(NegBetweenConditions,r.NegBetweenConditions))
+            if (!ConditionsEqual(PosPreConditions, r.PosPreConditions) || !ConditionsEqual(NegPreConditions, r.NegPreConditions) || !ConditionsEqual(PosBetweenConditions, r.PosBetweenConditions) || !ConditionsEqual(NegBetweenConditions, r.NegBetweenConditions))
             {
                 return false;
             }
@@ -263,14 +263,14 @@ namespace PlanValidation1
         public override int GetHashCode()
         {
             int hash = MainTask.TaskInstance.GetHashCode();
-            foreach(Task s in Subtasks)
+            foreach (Task s in Subtasks)
             {
                 hash = hash * 7 + s.GetHashCode();
             }
-            hash = hash + 7*GetHashCodeFC(PosPreConditions);
-            hash = hash + 7*GetHashCodeFC(NegPreConditions);
-            hash = hash + 7*GetHashCodeFC(PosBetweenConditions);
-            hash = hash + 7*GetHashCodeFC(NegBetweenConditions);
+            hash = hash + 7 * GetHashCodeFC(PosPreConditions);
+            hash = hash + 7 * GetHashCodeFC(NegPreConditions);
+            hash = hash + 7 * GetHashCodeFC(PosBetweenConditions);
+            hash = hash + 7 * GetHashCodeFC(NegBetweenConditions);
             return hash;
         }
 
@@ -278,9 +278,9 @@ namespace PlanValidation1
         {
             int i = 0;
             if (posBetweenConditions == null) return 1;
-            foreach (Tuple<int,int, Term> t in posBetweenConditions)
+            foreach (Tuple<int, int, Term> t in posBetweenConditions)
             {
-                i = i + t.Item1 * t.Item2* t.Item3.GetHashCode();
+                i = i + t.Item1 * t.Item2 * t.Item3.GetHashCode();
             }
             return i;
         }
@@ -294,19 +294,19 @@ namespace PlanValidation1
         {
             int i = 0;
             if (posPreConditions == null) return 1;
-            foreach(Tuple<int,Term> t in posPreConditions)
+            foreach (Tuple<int, Term> t in posPreConditions)
             {
                 i = i + t.Item1 * t.Item2.GetHashCode();
             }
             return i;
         }
 
-        private bool ConditionsEqual(List<Tuple<int, Term>> posPreConditions1,List<Tuple<int, Term>> posPreConditions2)
+        private bool ConditionsEqual(List<Tuple<int, Term>> posPreConditions1, List<Tuple<int, Term>> posPreConditions2)
         {
             if (posPreConditions1 == null && posPreConditions2 == null) return true;
-            else if (posPreConditions1 == null || posPreConditions2 == null)  return false; //one of them is null but not both
-            if (posPreConditions1.Count!=posPreConditions2.Count) return false;
-            for(int i=0;i<posPreConditions1.Count;i++)
+            else if (posPreConditions1 == null || posPreConditions2 == null) return false; //one of them is null but not both
+            if (posPreConditions1.Count != posPreConditions2.Count) return false;
+            for (int i = 0; i < posPreConditions1.Count; i++)
             {
                 if (!posPreConditions1[i].Item1.Equals(posPreConditions2[i].Item1) || !posPreConditions1[i].Item2.Equals(posPreConditions2[i].Item2)) return false;
             }

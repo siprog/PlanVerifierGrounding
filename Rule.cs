@@ -349,7 +349,7 @@ namespace PlanValidation1
                 {
                     UpdateQueue(i);
                 }
-                    return false; //I cant fill all instances of this subtask in this rule so it definitely canot be used.
+                return false; //I cant fill all instances of this subtask in this rule so it definitely canot be used.
             }
             else
             {
@@ -367,22 +367,22 @@ namespace PlanValidation1
                     bool changed = MainTaskType.SetMinTaskLengthIfSmaller(sum);
                     if (changed) CalculateTaskMinMaxPosition();
                 }
-            }            
+            }
             return ActivatedTasks == TaskTypeActivationArray.Length;
 
         }
 
         private void UpdateQueue(int frozenPosition)
         {
-            for (int i=0; i<maximumPosition.Count();i++)
+            for (int i = 0; i < maximumPosition.Count(); i++)
             {
-                if (i<frozenPosition && maximumPosition[i]>=0)
+                if (i < frozenPosition && maximumPosition[i] >= 0)
                 {
                     if (frozenQueue == null) frozenQueue = new Queue<Tuple<int, int>>();
-                    frozenQueue.Enqueue(new Tuple<int, int>(frozenPosition, TaskTypeArray[frozenPosition].Instances.Count()-1));
+                    frozenQueue.Enqueue(new Tuple<int, int>(frozenPosition, TaskTypeArray[frozenPosition].Instances.Count() - 1));
                     return;
-                } 
-                else if (frozenPosition==i)
+                }
+                else if (frozenPosition == i)
                 {
                     //All previous variabless are stil ast starting positions so for exmapel A1 B1 we are now doing C is our frozen and we added C4.
                     //i don't need to add this to queue because i can just iterate towards it normally. 
@@ -595,20 +595,21 @@ namespace PlanValidation1
         /// <returns></returns>
         public RuleInstance GetNextRuleInstance(out bool triedAllCombinations, int planSize)
         {
-           /*if (myHeuristic is InstancesHeuristic)
-            {
-                InstancesHeuristic instheuristic = (InstancesHeuristic)myHeuristic;
-                instheuristic.Recalculate(TaskTypeArray);
-                myHeuristic = instheuristic;
-            }*/
+            /*if (myHeuristic is InstancesHeuristic)
+             {
+                 InstancesHeuristic instheuristic = (InstancesHeuristic)myHeuristic;
+                 instheuristic.Recalculate(TaskTypeArray);
+                 myHeuristic = instheuristic;
+             }*/
             triedAllCombinations = false;
             int[] newPosition = null;
             List<Task> subtasks = null;
-            int IncreasedVariable=0;
-            while (subtasks == null) {
+            int IncreasedVariable = 0;
+            while (subtasks == null)
+            {
                 while (newPosition == null)
                 {
-                    if (frozenQueue!=null && frozenQueue.Count() > 0)
+                    if (frozenQueue != null && frozenQueue.Count() > 0)
                     {
                         Tuple<int, int> frozen = frozenQueue.Peek();
                         newPosition = GetNextComboFreeze(lastReachedStandardPosition, lastReached, frozen.Item1, frozen.Item2);
@@ -617,23 +618,26 @@ namespace PlanValidation1
                             frozenQueue.Dequeue();
                             maximumPosition[frozen.Item1] = frozen.Item2;
                             lastReached = null;
-                        } else
+                        }
+                        else
                         {
                             lastReached = newPosition;
                         }
-                    } else
+                    }
+                    else
                     {
-                        newPosition = GetNextComboNoFreeze(lastReachedStandardPosition, ref IncreasedVariable);                        
+                        newPosition = GetNextComboNoFreeze(lastReachedStandardPosition, ref IncreasedVariable);
                         if (newPosition == null)
                         {
                             triedAllCombinations = true;
                             maximumPosition[IncreasedVariable] = TaskTypeArray[IncreasedVariable].Instances.Count() - 1; // We tried all combinations for this rule.
                             return null;
-                        } else
+                        }
+                        else
                         {
-                            if (maximumPosition[IncreasedVariable]<newPosition[IncreasedVariable]) maximumPosition[IncreasedVariable] = newPosition[IncreasedVariable] - 1; //This allows for maximum position to be negative. If we haven't finished anything but that should  be okay.
-                             //Why the if. Well lets say we previously did A4B8C1 and now after some time we do A5B2C1 well B maximum should still be at 8 not 2.                                                                                                                                               //
-                            if (maximumPosition.Count() > IncreasedVariable + 1 && lastReachedStandardPosition!=null && maximumPosition[IncreasedVariable+1]<lastReachedStandardPosition[IncreasedVariable+1]) maximumPosition[IncreasedVariable + 1]=lastReachedStandardPosition[IncreasedVariable+1]; //Why does this work?
+                            if (maximumPosition[IncreasedVariable] < newPosition[IncreasedVariable]) maximumPosition[IncreasedVariable] = newPosition[IncreasedVariable] - 1; //This allows for maximum position to be negative. If we haven't finished anything but that should  be okay.
+                                                                                                                                                                              //Why the if. Well lets say we previously did A4B8C1 and now after some time we do A5B2C1 well B maximum should still be at 8 not 2.                                                                                                                                               //
+                            if (maximumPosition.Count() > IncreasedVariable + 1 && lastReachedStandardPosition != null && maximumPosition[IncreasedVariable + 1] < lastReachedStandardPosition[IncreasedVariable + 1]) maximumPosition[IncreasedVariable + 1] = lastReachedStandardPosition[IncreasedVariable + 1]; //Why does this work?
                             //We had A4B7C3 we moved from here to A4B8C1 because we only have 3 C this correctly updates maximum for Bs to 7
                             //but also needs to update maximum for Cs to 3 otherwise it will stay at 2. 
                             //The second part of the if is for the same reason as the if above. 
@@ -641,10 +645,10 @@ namespace PlanValidation1
                         }
                     }
                 }
-                subtasks = GetSubtasks(newPosition, TaskTypeArray,planSize); //This checks constraints. Like is one instance of a task before another like its supposed to be?
+                subtasks = GetSubtasks(newPosition, TaskTypeArray, planSize); //This checks constraints. Like is one instance of a task before another like its supposed to be?
                 newPosition = null;
             }
-            Term term = new Term(mainTaskType.Name, new Constant[0]); 
+            Term term = new Term(mainTaskType.Name, new Constant[0]);
             Task t = new Task(term, MainTaskReferences.Count, MainTaskType);
             RuleInstance ruleInstance = new RuleInstance(t, subtasks.ToList(), this, null, null);
             if (ruleInstance.IsValid()) return ruleInstance;
@@ -656,9 +660,9 @@ namespace PlanValidation1
         private bool CheckConditions(List<Task> subtasks, int planSize)
         {
             //We do this based on heuristics. 
-            for( int i=0;i<subtasks.Count();i++)
+            for (int i = 0; i < subtasks.Count(); i++)
             {
-                int tPosition = myHeuristic.Mapping(i);                
+                int tPosition = myHeuristic.Mapping(i);
                 Task t = subtasks[tPosition];
                 if (numOfOrderedTasksAfterThisTask?[tPosition] > 0)
                 {
@@ -671,22 +675,24 @@ namespace PlanValidation1
                 {
                     if (!(Math.Ceiling(t.StartIndex) >= minOrderedTaskPosition[tPosition])) return false; //>= because if normal task is on position 0 and so is empyt atsk and normal task must be befroe empty task than its 0>=(1-1)
                 }
-                for (int j=i+1;j<subtasks.Count();j++)
+                for (int j = i + 1; j < subtasks.Count(); j++)
                 {
                     int t2Position = myHeuristic.Mapping(j);
                     Task t2 = subtasks[t2Position];
                     if (t.Equals(t2)) return false;
                     if (IsExplicitlyBefore(tPosition, t2Position))
                     {
-                        if (Globals.TOIndicator) {
+                        if (Globals.TOIndicator)
+                        {
                             if (Math.Floor(t.EndIndex) + 1 != Math.Ceiling(t2.StartIndex)) return false;
                         }
                         else if (!(Math.Floor(t.EndIndex) < Math.Ceiling(t2.StartIndex))) return false;
                     }
                     else if (IsExplicitlyBefore(t2Position, tPosition))
                     {
-                        if (Globals.TOIndicator) {
-                            if(Math.Ceiling(t.StartIndex) != Math.Floor(t2.EndIndex) + 1) return false;
+                        if (Globals.TOIndicator)
+                        {
+                            if (Math.Ceiling(t.StartIndex) != Math.Floor(t2.EndIndex) + 1) return false;
                         }
                         else if (!(Math.Ceiling(t.StartIndex) > Math.Floor(t2.EndIndex))) return false;
                     }
@@ -696,16 +702,16 @@ namespace PlanValidation1
                         {
                             if (!(Math.Floor(t.EndIndex) < Math.Ceiling(t2.StartIndex))) return false; //Our task must be before this subtask so I shall only look at possible instances that end before the other starts. 
                         }
-                        else if (IsTransitivelyBefore(t2Position,tPosition))
+                        else if (IsTransitivelyBefore(t2Position, tPosition))
                         {
-                           if(!(Math.Ceiling(t.StartIndex) > Math.Floor(t2.EndIndex))) return false; //My task must start after task l.
+                            if (!(Math.Ceiling(t.StartIndex) > Math.Floor(t2.EndIndex))) return false; //My task must start after task l.
                         }
                     }
-                    if (!Differs(t.GetActionVector(), t2.GetActionVector())) return false;                    
+                    if (!Differs(t.GetActionVector(), t2.GetActionVector())) return false;
                 }
             }
             return true;
-            
+
         }
 
         /// <summary>
@@ -717,19 +723,19 @@ namespace PlanValidation1
         private List<Task> GetSubtasks(int[] newPosition, TaskType[] taskTypeArray, int planSize)
         {
 
-            List<Task> tasks = new List<Task>(); 
-            for (int i=0;i<taskTypeArray.Count();i++)
+            List<Task> tasks = new List<Task>();
+            for (int i = 0; i < taskTypeArray.Count(); i++)
             {
                 tasks.Add(taskTypeArray[i].Instances.ElementAt(newPosition[i]));
             }
-            if (CheckConditions(tasks, planSize))  return tasks;
+            if (CheckConditions(tasks, planSize)) return tasks;
             return null;
-            
+
         }
 
         private int[] GetNextComboNoFreeze(int[] lastReachedPosition, ref int IncreasedPosition)
         {
-           return GetNextWithFreezeFunction(lastReachedPosition, -1, ref IncreasedPosition);
+            return GetNextWithFreezeFunction(lastReachedPosition, -1, ref IncreasedPosition);
         }
 
         /// <summary>
@@ -741,10 +747,10 @@ namespace PlanValidation1
         /// <param name="lastReachedPositionWithFrozenValue"></param>
         /// <param name="positionofFrozenValue"></param>
         /// <returns></returns>
-        private int[] GetNextWithFreezeFunction(int[]lastReachedPositionWithFrozenValue, int positionofFrozenValue, ref int IncreasedPosition)
+        private int[] GetNextWithFreezeFunction(int[] lastReachedPositionWithFrozenValue, int positionofFrozenValue, ref int IncreasedPosition)
         {
             int[] newPosition;
-            if (lastReachedPositionWithFrozenValue==null)
+            if (lastReachedPositionWithFrozenValue == null)
             {
                 newPosition = new int[TaskTypeArray.Count()];
                 IncreasedPosition = 0;
@@ -754,7 +760,8 @@ namespace PlanValidation1
             newPosition = (int[])lastReachedPositionWithFrozenValue.Clone();
             for (int i = lastReachedPositionWithFrozenValue.Count() - 1; i >= 0; i--)
             {
-                if (i!= positionofFrozenValue) {
+                if (i != positionofFrozenValue)
+                {
                     if (TaskTypeArray[i].Instances.Count() > lastReachedPositionWithFrozenValue[i] + 1)
                     {
                         newPosition[i] = newPosition[i] + 1;
@@ -779,20 +786,21 @@ namespace PlanValidation1
         /// <param name="FrozenPosition"></param>
         /// <param name="Frozenvalue"></param>
         /// <returns></returns>
-        private int[] GetNextComboFreeze(int[] lastReachedStandardPosition, int[] lastReachedPositionWithFrozenValue,int FrozenPosition, int Frozenvalue)
+        private int[] GetNextComboFreeze(int[] lastReachedStandardPosition, int[] lastReachedPositionWithFrozenValue, int FrozenPosition, int Frozenvalue)
         {
             int IncreasedVar = 0;
-            int[] newPosition= new int[lastReachedStandardPosition.Count()];
-            if (lastReachedPositionWithFrozenValue==null)
+            int[] newPosition = new int[lastReachedStandardPosition.Count()];
+            if (lastReachedPositionWithFrozenValue == null)
             {
-                for (int i=0;i<lastReachedStandardPosition.Count();i++)
+                for (int i = 0; i < lastReachedStandardPosition.Count(); i++)
                 {
-                    if (i == FrozenPosition) newPosition[i] = Frozenvalue; 
+                    if (i == FrozenPosition) newPosition[i] = Frozenvalue;
                     else newPosition[i] = 0;
                 }
-                
-            } else newPosition = GetNextWithFreezeFunction(lastReachedPositionWithFrozenValue, FrozenPosition, ref IncreasedVar);
-            if (IsBigger(newPosition,lastReachedStandardPosition))
+
+            }
+            else newPosition = GetNextWithFreezeFunction(lastReachedPositionWithFrozenValue, FrozenPosition, ref IncreasedVar);
+            if (IsBigger(newPosition, lastReachedStandardPosition))
             {
                 return null;
             }
@@ -811,11 +819,11 @@ namespace PlanValidation1
         /// <returns></returns>
         private bool IsBigger(int[] newPosition, int[] lastReachedStandardPosition)
         {
-            if (lastReachedStandardPosition.Count()!=newPosition.Count())
+            if (lastReachedStandardPosition.Count() != newPosition.Count())
             {
                 Console.WriteLine("Warning subtasks positions dont have same length.");
             }
-            for (int i=0;i<lastReachedStandardPosition.Count(); i++)
+            for (int i = 0; i < lastReachedStandardPosition.Count(); i++)
             {
                 if (newPosition[i] > lastReachedStandardPosition[i]) return true;
                 if (newPosition[i] < lastReachedStandardPosition[i]) return false;
@@ -837,7 +845,7 @@ namespace PlanValidation1
                 doingNewtask = true;
                 //these unusedinstances originally had to list at the end does not seem to make much difference in speed whether its there or not.  
                 unusedInstances = unusedInstances.Where(x => x.CreationNumber >= LastCreationNumber);
-                   
+
                 index = newindex; //Temporarily we change the index so we don't have to change everything else and then after we switch it back to -1.
                 mappedIndex = newindex; //We still want to do the new subtask first. 
             }
@@ -889,7 +897,7 @@ namespace PlanValidation1
                             }
                         }
                         unusedInstances = unusedInstances.Where(x => Differs(x.GetActionVector(), l.GetActionVector())); //NO problem on empty task becasue they return null.
-                                                                                                                                  //This is not the same as the sum check later. 
+                                                                                                                         //This is not the same as the sum check later. 
                     }
                 }
             }
@@ -904,13 +912,13 @@ namespace PlanValidation1
             } //This shuld be okay even with empty tasks as they have minlegtharray of task 0
 
             //if index== newindex we didnt do anything and kept it that way.
-            if (doingNewtask) index = -1;           
+            if (doingNewtask) index = -1;
             foreach (Task tInstance in unusedInstances)
             {
                 List<Constant> newAllVars = FillMainTask(tInstance, myReferences, partialAllVars);
                 if (newAllVars != null)
                 {
-                    Task[] newSubTasks = (Task[])subtasks.Clone();                    
+                    Task[] newSubTasks = (Task[])subtasks.Clone();
                     newSubTasks[mappedIndex] = tInstance;
                     //We just assigned the last task. 
                     if (index == TaskTypeArray.Length - 1 || (index + 1 == myHeuristic.ReverseMapping(newindex) && myHeuristic.ReverseMapping(newindex) == TaskTypeArray.Length - 1))
@@ -934,7 +942,7 @@ namespace PlanValidation1
                         }
                         myResult.AddRange(newMyResult);
                     }
-                }               
+                }
             }
             return myResult;
         }
@@ -1069,9 +1077,9 @@ namespace PlanValidation1
             }
             Rule r = obj as Rule;
             if (r.GetHashCode() != GetHashCode()) return false;
-            if (!MainTaskType.Equals(r.MainTaskType)) return false;            
-            return (NullAcceptingSequenceEqual(TaskTypeArray,r.TaskTypeArray) && NullAcceptingSequenceEqual(AllVars,r.AllVars) &&
-                NullAcceptingSequenceEqual(posPreConditions,r.posPreConditions) &&
+            if (!MainTaskType.Equals(r.MainTaskType)) return false;
+            return (NullAcceptingSequenceEqual(TaskTypeArray, r.TaskTypeArray) && NullAcceptingSequenceEqual(AllVars, r.AllVars) &&
+                NullAcceptingSequenceEqual(posPreConditions, r.posPreConditions) &&
                 NullAcceptingSequenceEqual(negPreConditions, r.negPreConditions) &&
                 NullAcceptingSequenceEqual(posBetweenConditions, r.posBetweenConditions) &&
                 NullAcceptingSequenceEqual(negBetweenConditions, r.negBetweenConditions) &&
@@ -1081,7 +1089,7 @@ namespace PlanValidation1
 
         public override int GetHashCode()
         {
-            int hash = MainTaskType.GetHashCode();            
+            int hash = MainTaskType.GetHashCode();
             hash = hash * 11 + (int)(posPreConditions.Count) + (int)(negPostConditions.Count * 10) + (int)(posBetweenConditions.Count) + (int)(negBetweenConditions.Count * 10);
             if (TaskTypeArray != null)
             {
