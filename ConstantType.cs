@@ -67,7 +67,7 @@ namespace PlanValidation1
         /// <returns></returns>
         public bool IsAncestorTo(ConstantType givenType)
         {
-            if (this.Name == "any") return true; //INFO any is child to everything. This is used for constants with unknown types. We dont allow methdos that have unspecified tzpe. As in we cannot have type all (unlless user defined) 
+            if (this.Name == "any") return true; //INFO any is child to everything. This is used for constants with unknown types. We dont allow methdos that have unspecified type. As in we cannot have type all (unlless user defined) 
             if (givenType.AncestorTypes.Contains(this)) return true;
             return false;
         }

@@ -7,8 +7,8 @@ using System.Text;
 namespace PlanValidation1
 {
     /// <summary>
-    /// Represents a partial step between creating a task form a rule.
-    /// Has all main variable sof rule and subtasks filled. Creates proper conditions (with actual variables not number references).
+    /// Represents a partial step between creating a task from a rule.
+    /// Has all main variables of rule and subtasks filled. Creates proper conditions (with actual variables not number references).
     /// </summary>
     class RuleInstance
     {
@@ -30,9 +30,7 @@ namespace PlanValidation1
         public RuleInstance(Task mainTask, List<Task> subtasks, Rule rule, List<String> allVars, List<Constant> allconstants)
         {
             this.MainTask = mainTask;
-            this.Subtasks = subtasks;
-            //This doesnt need to happen as we check order when we choose subtasks. 
-            //valid = CheckOrdering(rule.orderConditions);            
+            this.Subtasks = subtasks;      
             PosPreConditions = new List<Tuple<int, Term>>();
             NegPreConditions = new List<Tuple<int, Term>>();
             PosPostConditions = new List<Tuple<int, Term>>();
@@ -40,7 +38,7 @@ namespace PlanValidation1
             PosBetweenConditions = new List<Tuple<int, int, Term>>();
             NegBetweenConditions = new List<Tuple<int, int, Term>>();
             if (valid) valid = CreateConditions(rule.posBetweenConditions, PosBetweenConditions, allVars, rule.AllVarsTypes); //These go first as they are most likely to break the rule instance
-            if (valid) valid = CreateConditions(rule.negBetweenConditions, NegBetweenConditions, allVars, rule.AllVarsTypes); //TODO do between conditions with forall. 
+            if (valid) valid = CreateConditions(rule.negBetweenConditions, NegBetweenConditions, allVars, rule.AllVarsTypes); 
             if (valid) valid = CreateConditions(rule.posPreConditions, PosPreConditions, allVars, rule.AllVarsTypes, true, allconstants);
             if (valid) valid = CreateConditions(rule.negPreConditions, NegPreConditions, allVars, rule.AllVarsTypes, false, allconstants);
             if (valid) valid = CreateConditions(rule.posPostConditions, PosPostConditions, allVars, rule.AllVarsTypes, true, allconstants);
@@ -186,7 +184,7 @@ namespace PlanValidation1
             return true;
         }
         /// <summary>
-        /// Between conditions indexes must be ordered from 0!!!
+        /// Between conditions indexes must be ordered from 0!
         /// </summary>
         /// <param name="BetweenConditions1"></param>
         /// <param name="BetweenConditions2"></param>

@@ -29,7 +29,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Retruns true/false depending on whether the plan is valid. 
+        /// Returns true/false depending on whether the plan is valid. 
         /// </summary>
         /// <param name="plan"></param>
         /// <param name="allTaskTypes"></param>
@@ -43,7 +43,6 @@ namespace PlanValidation1
             List<Slot> timeline = CreateEmptyTimeline(plan.Count + 1);
             timeline[0].AddConditions(initialConditions); //Adds initial state assuming all initial conditions are only positive. 
             CheckNullConditions(plan[0], timeline[0]);
-            //if (plan[0].PosPreConditions?.Count > 0) timeline[0].AddConditions(plan[0].PosPreConditions); This was here before why. I think its wrong
             if (!timeline[0].SharesAllItems(plan[0].PosPreConditions))
             {
                 Console.WriteLine("This Action {0} does not have it's preconditions {1}. Plan is invalid.", plan[0], string.Join(",", plan[0].PosPreConditions));
@@ -98,7 +97,7 @@ namespace PlanValidation1
             newTasks.UnionWith(emptyTasks);
             int position = 0; //position in plan.
 
-            //Transforms action into tasks. 
+            //Transforms actions into tasks. 
             foreach (Action a in plan)
             {
                 TaskType taskType = FindTaskType(a, allTaskTypes);
@@ -121,7 +120,7 @@ namespace PlanValidation1
             int notNew = 0;
             applicableRules.AddRange(GetApplicableRules(newTasks));
             applicableRules.RemoveRange(emptyRules); //We have already created basic empty rules. We dont want to create them again. 
-                                                     //TODO does the line above need to be here at all? Or at least it shoudl be out of the while cycle. 
+                                                    
             allTasks.UnionWith(newTasks);
             newTasks = new HashSet<Task>();
             while (!applicableRules.IsEmpty())
@@ -129,9 +128,6 @@ namespace PlanValidation1
                 Rule r = applicableRules.Pop();
                 HashSet<RuleInstance> ruleInstances = r.GetRuleInstances(plan.Count, allConstants, plan.Count);
                 bool RuleWasCreatedInThisRound = false;
-                //Even though the rule instance might not produce a real task. We already tried all task combinatinons so in the next attempt we need something new. 
-                //The comarison with the task number have to be >= because this is just when we tried to create a task for te rule not when we actually succesfuly created it. }the task number wont change yet)
-                //No actually teh last creation number can onlz have numbe rin once its reallz created task. 
                 foreach (RuleInstance ruleInstance in ruleInstances)
                 {
 
@@ -142,7 +138,7 @@ namespace PlanValidation1
                     double max = FindMaxIndex(subtasks); //Returns -1 if subtasks are empty
                     bool[] mainTaskVector = new bool[plan.Count];
                     bool validNewTask = true;
-                    //TO does not need to check intersections but since this create the maintaskvector there is no point in skipping this. It would be teh same amount of work. 
+                    //TO does not need to check intersections but since this creates the maintaskvector there is no point in skipping this. It would be the same amount of work. 
                     validNewTask = CreateActionVectorAndCheckIntersections(min, max, plan.Count, subtasks, ref mainTaskVector);
 
                     if (validNewTask)
@@ -170,9 +166,9 @@ namespace PlanValidation1
                             {
                                 r.LastCreationNumber = taskNumber;
                                 RuleWasCreatedInThisRound = true;
-                                //Why is this is so complicated? from one rule we create mutliple tasks maybe 10. If we give the rule its creation number evertime then it gets the last number so 10. But what about task9. If a rule self refernces A->A,B it could
-                                //never use tasks 1-9 nextt time it tries ot create itself becaus eits iteratio is 10. Instead its iteration must be the number of the firts task from this round so 1.
-                                ///Whz cant I just use number from attempt to make a task instead of just task. Well lets say I tried with task it dindt work ow I am trzing with new A well now i can onlz have new Bs after A but there would technicall be no new Bs so order of novelty A, B would not work. 
+                                //Why is this is so complicated? from one rule we create mutliple tasks maybe 10. If we give the rule its creation number everytime then it gets the last number so 10. But what about task9? If a rule self references A->A,B it could
+                                //never use tasks 1-9 next time it tries to create itself because its iteration is 10. Instead its iteration must be the number of the first task from this round so 1.
+                                ///Why cant I just use number from attempt to make a task instead of just task? Well lets say I tried with task it didnt work now I am trying with new A well now i can only have new Bs after A but there would technically be no new Bs so order of novelty A, B would not work. 
 
                             }
                             Task t = new Task(mainTaskName, mainTaskVector, ruleInstance.MainTask.TaskType, min, max, iteration, preconditionPosition.Item2);
@@ -205,7 +201,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Cheks whether multiple subtasks dont intersect (share an action that they decompose into)
+        /// Checks whether multiple subtasks dont intersect (share an action that they decompose into)
         /// Min is minimal start index of subtasks and max is maximal end index of subtasks. 
         /// </summary>
         /// <returns></returns>
@@ -341,7 +337,7 @@ namespace PlanValidation1
             {
                 for (int i = 0; i < timeline.Count; i++)
                 {
-                    //Constant[] emptyConst = new Constant[r.MainTaskType.NumOfVariables]; /
+                    
                     Constant[] emptyConst = new Constant[r.AllVars.Count];
                     List<Task> suitableTasks;
                     if (r.posPreConditions == null || r.posPreConditions?.Any(x => x.Item2 != "=" && x.Item2 != "equal") != true) suitableTasks = FillTaskWithNoPreconditions(r, timeline[i], emptyConst.ToList(), 0, i, timeline.Count, new List<Task>(), allConstants);
@@ -387,7 +383,7 @@ namespace PlanValidation1
                                     }
 
                                 }
-                                t.BufferZoneIndex = (int)Math.Ceiling(t.StartIndex); //TODO how do we do empty tasks for bufferZones?
+                                t.BufferZoneIndex = (int)Math.Ceiling(t.StartIndex); 
                             }
                         }
                     }
@@ -491,7 +487,7 @@ namespace PlanValidation1
                 foreach (List<Constant> partialVars in newAllVars)
                 {
                     Term term = r.FillMainTaskFromAllVarsReturnTerm(partialVars);
-                    //Term term = new Term(r.MainTaskType.Name, partialVars.ToArray()); //TODO to je cele vymenene za to nahore ,protoze partial vars jsou ted podle poctu parametru
+                    
                     Task t;
                     t = new Task(term, taskBoolSize, r.MainTaskType, slotNumber - 0.5, slotNumber - 0.5);
                     solution.Add(t);
@@ -529,7 +525,7 @@ namespace PlanValidation1
                         else
                         {
                             //forallcondition is invalid. This slot will not fulfill my empty task
-                            //TODo couldprobably be improved by moving above as if forallcondition will not be fulfilled it doesn't matter if other conditions were fulfilled. 
+                            
                             return solution;
                         }
                     }
@@ -552,7 +548,7 @@ namespace PlanValidation1
                             for (int i = 0; i < cond.Item3.Count; i++)
                             {
 
-                                ConstantType DesiredType = r.AllVarsTypes[cond.Item3[i]]; //cond.item3 refernces to what parameter in rule is the condition related. That parameter must be the right type. 
+                                ConstantType DesiredType = r.AllVarsTypes[cond.Item3[i]]; //cond.item3 references to what parameter in rule is the condition related. That parameter must be the right type. 
                                 Constant myConst = c.Variables[i];
                                 if (DesiredType.IsAncestorTo(myConst.Type))
                                 {
@@ -568,7 +564,7 @@ namespace PlanValidation1
                             }
                             if (valid)
                             {
-                                //This is not a forall conditons, so any of these conditions can fill my task.
+                                //This is not a forall conditions, so any of these conditions can fill my task.
                                 //The condition above is valid so I send it through. 
                                 List<Task> newTasks = FillTaskFromSlot(r, s, newPartialVars, index + 1, slotNumber, taskBoolSize, solution, allConstants, AllVarsTypes);
                                 solution.AddRange(newTasks);
@@ -586,7 +582,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Return trues if in this slot all constants of given forallType are fulfilling given forallCondition. 
+        /// Returns true if in this slot all constants of given forallType are fulfilling given forallCondition. 
         /// </summary>
         /// <param name="forallCondition">name of the condition that we want to fulfill for all constants of given type</param>
         /// <param name="forallType">type of constants we want to fill the forall condition</param>
@@ -619,7 +615,7 @@ namespace PlanValidation1
         {
             if (index == partialAllVars.Count)
             {
-                //Term term = new Term(r.MainTaskType.Name, partialAllVars.ToArray());
+                
                 Term term = r.FillMainTaskFromAllVarsReturnTerm(partialAllVars);
                 Task t;
                 t = new Task(term, taskBoolSize, r.MainTaskType, slotNumber - 0.5, slotNumber - 0.5);
@@ -666,11 +662,10 @@ namespace PlanValidation1
             {
                 Term condition = tuple.Item3;
                 //Get the actual slot number from the boolean vector and the number of the subtask in rule
-                // int k = GetSlotNumber(tuple.Item1, mainTaskVector);
-                //int l = GetSlotNumber(tuple.Item2, mainTaskVector);
-                int k = (int)Math.Floor(r.Subtasks[tuple.Item1].EndIndex); //Why floor. if its a normal action then lets say its 4 then the conditions must be true from slot 5.
+                
+                int k = (int)Math.Floor(r.Subtasks[tuple.Item1].EndIndex); //Why floor? if its a normal action then lets say its 4 then the conditions must be true from slot 5.
                 //If it is an empty subtask. Then lets say the index is 4.5 it looks at its conditions on slot 5. The between conditions must also be true from slot 5. 
-                int l = (int)Math.Ceiling(r.Subtasks[tuple.Item2].StartIndex); //The between condition ends on the same position that the empty task looks at its conditions. So for empty task on 4,5 which looks at slot 5 for preconditions it will also looks to 5.
+                int l = (int)Math.Ceiling(r.Subtasks[tuple.Item2].StartIndex); //The between condition ends on the same position that the empty task looks at its conditions. So for empty task on 4,5 which looks at slot 5 for preconditions it will also look to 5.
                 for (int i = k + 1; i <= l; i++)
                 {
                     if (!timeline[i].Conditions.Contains(condition)) return false;
@@ -691,7 +686,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// This functsion should only be called if we do sometime before conditions. 
+        /// This function should only be called if we do sometime before conditions. 
         /// </summary>
         /// <param name="r"></param>
         /// <param name="vector"></param>
@@ -700,7 +695,7 @@ namespace PlanValidation1
         {
             foreach (Task t in r.Subtasks)
             {
-                for (int i = t.BufferZoneIndex; i < t.StartIndex; i++) //default value of buffer zone is on start index. So if the task has no preconditions then bufferYone is equal start index and it will go through here. 
+                for (int i = t.BufferZoneIndex; i < t.StartIndex; i++) //default value of buffer zone is on start index. So if the task has no preconditions then bufferzone is equal start index and it will go through here. 
                 {
                     if (vector[i])
                     {
@@ -715,7 +710,7 @@ namespace PlanValidation1
         /// <summary>
         /// Check preconditions of a task. It returns whether conditions are satisfied and the slot number. 
         /// Note that for immediatelly before conditions if the slot number is not the start index then it return false,
-        /// otherwise for sometime before conditions if the conditions are true at anz slot before the start index it will return true and the slot number. 
+        /// otherwise for sometime before conditions if the conditions are true at any slot before the start index it will return true and the slot number. 
         /// </summary>
         /// <param name="r"></param>
         /// <param name="timeline"></param>
@@ -807,7 +802,7 @@ namespace PlanValidation1
             int count = -1;
             if (item1 == -1)
             {
-                //This is related to the whole task so currently we take it that it must be true before the whole task but mabe it should remain trhough the whole task instead. 
+                //This is related to the whole task so currently we take it that it must be true before the whole task but mabe it should remain through the whole task instead. 
                 for (int i = 0; i < mainTaskVector.Length; i++)
                 {
                     if (mainTaskVector[i]) return i;
@@ -910,7 +905,7 @@ namespace PlanValidation1
                 return t.TaskType.Equals(goalRule.MainTaskType);
             }
             else return true;
-            //There is no goaltask so anz task that spans over all actions will do. 
+            //There is no goaltask so any task that spans over all actions will do. 
         }
 
 

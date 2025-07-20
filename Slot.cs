@@ -7,7 +7,7 @@ namespace PlanValidation1
 {
     /// <summary>
     /// Represents one moment "in time". There can be exactly one action in each slot. 
-    /// Slot ha s a list of positive conditions that are true in that moment. Negative conditions are simply conditions that are not present. 
+    /// Slot has a list of positive conditions that are true in that moment. Negative conditions are simply conditions that are not present. 
     /// </summary>
     class Slot
     {
@@ -51,7 +51,7 @@ namespace PlanValidation1
 
 
         /// <summary>
-        /// Removes condition if the slot had them. 
+        /// Removes conditions if the slot had them. 
         /// </summary>
         /// <param name="conditions"></param>
         public void RemoveConditions(List<Term> conditions)
@@ -79,7 +79,7 @@ namespace PlanValidation1
             {
                 if (c3.Contains(condition))
                 {
-                    c3.Remove(condition); //This works. 
+                    c3.Remove(condition); 
                 }
             }
             AddConditions(c3);

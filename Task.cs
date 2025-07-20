@@ -20,7 +20,6 @@ namespace PlanValidation1
 
         /// <summary>
         /// This is the index of the last state before this task that satisfies the before condition. This is only relevant for sometime before conditions.
-        /// TODO what will be the value for immediately before conditions 0 or do we set it to something?
         /// </summary>
         public int BufferZoneIndex;
 
@@ -48,20 +47,6 @@ namespace PlanValidation1
             }
         }
 
-        /// <summary>
-        /// For empty subtasks this changes nothing. 
-        /// </summary>
-        /* private void UpdateStartIndex()
-         {
-             for (int i = ActionVector.Length - 1; i >= 0; i--)
-             {
-                 if (ActionVector[i])
-                 {
-                     StartIndex = i;
-                     break;
-                 }
-             }
-         }*/
         private void UpdateStartIndex()
         {
             for (int i = 0; i < ActionVector.Length; i++)
@@ -110,7 +95,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Compares wehther two tasks are equal. thez are equal if thez have the same name and variable  and stat and end index, but thez maz have different bufferzone values. 
+        /// Compares whether two tasks are equal. they are equal if they have the same name and variable  and stat and end index, but they may have different bufferzone values. 
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>

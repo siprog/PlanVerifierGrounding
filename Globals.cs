@@ -35,12 +35,12 @@ namespace PlanValidationExe
         /// The plan is only valid if given root task decomposes into the plan not just any task. 
         /// Automatically set on false, argument sets it to true. 
         /// </summary>
-        public static bool KnownRootTask = true;
+        public static bool KnownRootTask = false;
         /// <summary>
         /// If this is set to true we must check the goal state in order for the plan to be valid. 
-        /// Automatically set on false, arguments set it to true. 
+        /// Automatically set on false, argument sets it to true. 
         /// </summary>
-        public static bool CheckGoalState = true;
+        public static bool CheckGoalState = false;
 
         /// <summary>
         /// If set to true when we create new rules we also check whether subtasks are transitively in the right order not just explicitly. 
@@ -60,7 +60,7 @@ namespace PlanValidationExe
         public static bool IgnoreCase = false;
 
         /// <summary>
-        /// As default we use immediatelly before conditions which means that for method B if it has a preconddition it must be true in the state before the first action of B. so if it start on action 5 then state 5. 
+        /// As default we use immediatelly before conditions which means that for method B if it has a preconddition it must be true in the state before the first action of B. so if it starts on action 5 then state 5. 
         /// Sometimes before conditions means that it must be true sometimes before but after any preceesing subtask fro some method that decomposes into B so for method M->A, B it must be true sometimes before end of A and start of B.
         /// This is only related to method preconditions actions always use immediatelly before conditions. 
         /// </summary>

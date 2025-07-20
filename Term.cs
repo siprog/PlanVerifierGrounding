@@ -47,7 +47,6 @@ namespace PlanValidation1
             }
             else return false;
         }
-        //I didn't override GetHashFunction is that ok?
 
         public override int GetHashCode()
         {

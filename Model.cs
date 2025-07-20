@@ -18,8 +18,8 @@ namespace PlanValidationExe
         internal Dictionary<String, ConstantType> AllConstantTypes { get; set; }
 
         /// <summary>
-        /// Marks all task and rules that can be reached from decomposition of goal rule. 
-        /// This does not mark actionTypes. But that is not necessary as wehn we create actions, we look at tasktypes and their reachability.   
+        /// Marks all tasks and rules that can be reached from decomposition of goal rule. 
+        /// This does not mark actionTypes. But that is not necessary as when we create actions, we look at tasktypes and their reachability.   
         /// </summary>
         /// <param name="goalRule"></param>
         internal void MarkAsReachable(Rule goalRule)
