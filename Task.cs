@@ -6,7 +6,7 @@ using System.Text;
 namespace PlanValidation1
 {
     /// <summary>
-    /// Represent the actual task. 
+    /// Represents the actual task. 
     /// </summary>
     class Task
     {
@@ -17,10 +17,9 @@ namespace PlanValidation1
         public double EndIndex;
         public int CreationNumber;
         public bool isSubtaskSomewhere; //Only used for analysis not for normal program. If a task is a subtask to some other task then this is true. 
-        public int distancetoGoalTask; // This is assigned from the rule that made me. 
+        public int distancetoGoalTask; // This is assigned from the rule that made this. 
         /// <summary>
         /// This is the index of the last state before this task that satisfies the before condition. This is only relevant for sometime before conditions.
-        /// TODO what will be the value for immediately before conditions 0 or do we set it to something?
         /// </summary>
         public int BufferZoneIndex;
 
@@ -47,21 +46,6 @@ namespace PlanValidation1
                 }
             }
         }
-
-        /// <summary>
-        /// For empty subtasks this changes nothing. 
-        /// </summary>
-        /* private void UpdateStartIndex()
-         {
-             for (int i = ActionVector.Length - 1; i >= 0; i--)
-             {
-                 if (ActionVector[i])
-                 {
-                     StartIndex = i;
-                     break;
-                 }
-             }
-         }*/
         private void UpdateStartIndex()
         {
             for (int i = 0; i < ActionVector.Length; i++)
@@ -110,7 +94,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Compares wehther two tasks are equal. thez are equal if thez have the same name and variable  and stat and end index, but thez maz have different bufferzone values. 
+        /// Compares wehther two tasks are equal. they are equal if they have the same name and variable  and stat and end index, but they may have different bufferzone values. 
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>

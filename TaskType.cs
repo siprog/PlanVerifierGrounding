@@ -6,7 +6,7 @@ using System.Text;
 namespace PlanValidation1
 {
     /// <summary>
-    /// Type of a task used to call Rules and tell them there are task insatnces ready. 
+    /// Type of a task used to call Rules and tell them there are task instances ready. 
     /// </summary>
     class TaskType
     {
@@ -15,7 +15,7 @@ namespace PlanValidation1
         /// </summary>
         public List<Rule> MainRules = new List<Rule>();
         /// <summary>
-        /// List of rules that contains this type of task as subtask. 
+        /// List of rules that contain this type of task as subtask. 
         /// </summary>
         public List<Rule> Rules;
         public String Name; //Task name
@@ -60,7 +60,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Sets mintask length to i if i is smaller tahn mintask length otherwise dos nothing.
+        /// Sets mintask length to i if i is smaller than mintask length otherwise does nothing.
         /// Return true if value changed.
         /// </summary>
         /// <param name="i"></param>
@@ -81,7 +81,7 @@ namespace PlanValidation1
 
         public void AddInstance(Task t)
         {
-            Instances.Add(t); // Because this is a hashset it automtically wont allow duplications. 
+            Instances.Add(t); // Because this is a hashset it automatically wont allow duplications. 
         }
 
         /// <summary>

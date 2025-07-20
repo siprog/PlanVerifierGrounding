@@ -120,8 +120,8 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// If there is an agrument given about heuristics this wil handleit and set the correct heurstic. 
-        /// The argument for heuristic looks like this h+number. NUmbe ris based on descrptiion in Globals
+        /// If there is an argument given about heuristics this will handle it and set the correct heurstic. 
+        /// The argument for heuristic looks like this h+number. Number is based on description in Globals
         /// 0=most parameters
         /// 1= least parameters
         /// 2= original

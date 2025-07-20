@@ -11,7 +11,7 @@ namespace PlanValidationExe
     abstract class SearchHeuristic
     {
         /// <summary>
-        /// This retruns the heuristic value of the rule. The lower the value the more imrpotant the rule is and the sooner it should be picked.  
+        /// This returns the heuristic value of the rule. The lower the value the more imrpotant the rule is and the sooner it should be picked.  
         /// </summary>
         public abstract int GetValue(Rule r);
     }
@@ -20,7 +20,7 @@ namespace PlanValidationExe
     /// <summary>
     /// Finds distance to goal task. 
     /// If there is no goal task then finds distance to any top task. 
-    /// If there are mutliple paths an argument determines whether we use min or max. 
+    /// If there are multiple paths an argument determines whether we use min or max. 
     /// </summary>
     class DistanceToGoalHeuristic : SearchHeuristic
     {
@@ -30,7 +30,6 @@ namespace PlanValidationExe
         /// <summary>
         /// This is used so we only calculate the rules once.
         /// This should not be a memory problem as there are typically not that many different rules. 
-        /// Be careful about this with grounding. 
         /// </summary>
         private Dictionary<Rule, int> rules;
 
@@ -61,7 +60,7 @@ namespace PlanValidationExe
         /// <summary>
         /// Use minimum to goal distance heuristics. Cannot use maximum beacuse of this:
         /// two rules recursive to one another:
-        /// A->B,C and B->A,D because A asks B what is your depth nd then B asks A what is your deptha nd it cycles. This is also why ou cna never use max for distance to goal heuristic. 
+        /// A->B,C and B->A,D because A asks B what is your depth and then B asks A what is your depth and it cycles. This is also why you can never use max for distance to goal heuristic. 
         /// </summary>
         /// <param name="r"></param>
         /// <param name="dis"></param>

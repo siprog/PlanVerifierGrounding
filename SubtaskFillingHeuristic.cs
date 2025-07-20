@@ -13,7 +13,7 @@ namespace PlanValidationExe
     abstract class SubtaskFillingHeuristic
     {
         /// <summary>
-        /// This retruns the mapping of int i. 
+        /// This returns the mapping of int i. 
         /// Variable i the position in the heuristic. So i=1 will return the first subtask's position (regular position based on the domain) according to the heristic. 
         /// So for heuristic for the most parameters i=1 will return the position of the subtask with most parameters. 
         /// The position here is just position in the description of the rule this is not based on ordering on anzthing like that. 
@@ -87,7 +87,7 @@ namespace PlanValidationExe
     }
 
     /// <summary>
-    /// Heuristic that orderes subtasks based on number of instances. First we do subtasks with smallest number of instances. 
+    /// Heuristic that orders subtasks based on number of instances. First we do subtasks with smallest number of instances. 
     /// </summary>
     class InstancesHeuristic : SubtaskFillingHeuristic
     {

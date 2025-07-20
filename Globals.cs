@@ -35,12 +35,12 @@ namespace PlanValidationExe
         /// The plan is only valid if given root task decomposes into the plan not just any task. 
         /// Automatically set on false, argument sets it to true. 
         /// </summary>
-        public static bool KnownRootTask = true;
+        public static bool KnownRootTask = false;
         /// <summary>
         /// If this is set to true we must check the goal state in order for the plan to be valid. 
         /// Automatically set on false, arguments set it to true. 
         /// </summary>
-        public static bool CheckGoalState = true;
+        public static bool CheckGoalState = false;
 
         /// <summary>
         /// If set to true when we create new rules we also check whether subtasks are transitively in the right order not just explicitly. 
@@ -68,7 +68,7 @@ namespace PlanValidationExe
 
 
         /// <summary>
-        /// Returns null or value of a key in doctionary. 
+        /// Returns null or value of a key in dictionary. 
         /// </summary>
         /// <typeparam name="K"></typeparam>
         /// <typeparam name="V"></typeparam>

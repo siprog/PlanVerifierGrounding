@@ -9,7 +9,7 @@ namespace PlanValidationExe
     {
         private SearchHeuristic h;
         private HashSet<Rule>[] array;
-        //We use heuritics where the heuristic with lowest number is the one we want. In this int we remember what is the current Minimum so we can just jump into the position. 
+        //We use heuristics where the heuristic with lowest number is the one we want. In this int we remember what is the current Minimum so we can just jump into the position. 
         private int currentMin;
         private Rule currentMinRule;
         /// <summary>

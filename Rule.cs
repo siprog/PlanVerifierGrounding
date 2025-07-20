@@ -18,7 +18,7 @@ namespace PlanValidation1
             set
             {
                 mainTaskType = value;
-                //This telsl the main task type that I am it's main rule.
+                //This tells the main task type that I am it's main rule.
                 mainTaskType.MainRules.Add(this);
             }
         }
@@ -30,7 +30,7 @@ namespace PlanValidation1
         internal bool reachable = false;
         internal int minDistanceToGoalTask;
         /// <summary>
-        /// Has 1 is the given task type has at least one task instance 
+        /// Has 1 if the given task type has at least one task instance 
         /// </summary>
         bool[] TaskTypeActivationArray;
         int[] TaskTypeActivationCreationNumberArray;
@@ -45,12 +45,12 @@ namespace PlanValidation1
         Queue<Tuple<int, int>> frozenQueue;
         /// <summary>
         /// These are the positions that we have used in our standard iterations. So for example before we even start this rule we might have 
-        /// 10A and 5B so amximum for A is 10 and for B is 2.
+        /// 10A and 5B so maximum for A is 10 and for B is 2.
         /// </summary>
         int[] maximumPositions;
 
         /// <summary>
-        /// One list represents one task and the numbers in him say which variable of all vars this corresponss to. So for example for rule:
+        /// One list represents one task and the numbers in him say which variable of all vars this corresponds to. So for example for rule:
         /// Transfer(L1,C,R,L2):-Load(C,L1,R),Move(R,L1,L2),Unload(C,L2,R) with all vars (L1,C,R,L2)
         /// The array looks like this{(1,0,2),(2,0,3),(1,3,2)}.
         /// 
@@ -76,7 +76,7 @@ namespace PlanValidation1
         public List<ConstantType> AllVarsTypes = new List<ConstantType>();
 
         /// The first int says to which of the rule's subtasks this applies to,the string is the name of the condition and the list of ints i the references to the variables in this rule.
-        /// -1 means it must be before the all the rules of this subtask. TODO Check if using -1 is okay later in the program. 
+        /// -1 means it must be before the all the rules of this subtask.
         /// So for example for condition at(C,L1) for load(C,L1,R)  we
         /// have tuple (0,at,(0,1))
         /// </summary>
@@ -94,7 +94,7 @@ namespace PlanValidation1
         /// <summary>
         /// For between condition, we have two ints representing which actions they are related too. Then name of condition. Then lists of int representing to which variables they are related to.
         /// 
-        /// So for exmaple for condition on(R,C) between Load(C,L1,R) and Unload(C,L2,R) would be this: (0,2,on,(2,0),(2,0))
+        /// So for example for condition on(R,C) between Load(C,L1,R) and Unload(C,L2,R) would be this: (0,2,on,(2,0),(2,0))
         /// </summary>
         public List<Tuple<int, int, String, List<int>>> posBetweenConditions;
         public List<Tuple<int, int, String, List<int>>> negBetweenConditions;
@@ -102,7 +102,7 @@ namespace PlanValidation1
         public List<Tuple<int, int>> orderConditions;
 
         /// <summary>
-        /// Represents the number of subtask that are after this particual subtask based on ordering.         /// 
+        /// Represents the number of subtasks that are after this particual subtask based on ordering.         /// 
         /// </summary>
         public int[] numOfOrderedTasksAfterThisTask;
 
@@ -229,7 +229,7 @@ namespace PlanValidation1
         /// <returns></returns>
         private List<List<int>> CreateListsOfTasks(bool after)
         {
-            List<List<int>> indexOfTasksAfter = new List<List<int>>(TaskTypeArray.Length); //Represents the index of tasks that are ordered with this task. Only immediate level. Meaning if I have ordering 1<2 and 2<3. INdex 1 onlz has 2 there. 
+            List<List<int>> indexOfTasksAfter = new List<List<int>>(TaskTypeArray.Length); //Represents the index of tasks that are ordered with this task. Only immediate level. Meaning if I have ordering 1<2 and 2<3. INdex 1 only has 2 there. 
             for (int i = 0; i < TaskTypeArray.Length; i++) indexOfTasksAfter.Add(null);
             for (int i = 0; i < TaskTypeArray.Length; i++)
             {
@@ -249,13 +249,13 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Adds one partial conditions, if it is not already transitively implied. 
+        /// Adds one partial condition, if it is not already transitively implied. 
         /// returns true if this was a new relation (not transitively implied)
         /// isExplicit determines whether this is a condition given to us by the user.         /// 
         /// </summary>
         public bool AddPartialCondition(int first, int second, bool isExplicit)
         {
-            //Unfortunately some trasnitive relations can still slip through with the wrong ordering for exmaple A < c, A<B,B<cthese wil be removed in finish partial ordering. 
+            //Unfortunately some trasnitive relations can still slip through with the wrong ordering for example A < c, A<B,B<cthese wil be removed in finish partial ordering. 
             if (listAfter[first] != null && listAfter[first].Contains(second))
             {
                 //This condition is implied we can ignore it. 
@@ -272,7 +272,6 @@ namespace PlanValidation1
                     foreach (int i in listBefore[first])
                     {
                         AddPartialCondition(i, second, false);
-                        //This will newer actually add a new condition. 
                     }
                 }
                 if (listAfter[second] != null)
@@ -280,7 +279,6 @@ namespace PlanValidation1
                     foreach (int i in listAfter[second])
                     {
                         AddPartialCondition(first, i, false);
-                        //This will newer actually add a new condition. 
                     }
                 }
                 //This was a condition representing a new relation 
@@ -357,7 +355,7 @@ namespace PlanValidation1
                 {
                     if (!TaskTypeActivationArray[i]) ActivatedTasks++; //If this activated the task (as in it was not ready before) it should increase the activated task counter.
                     TaskTypeActivationArray[i] = true;
-                    TaskTypeActivationCreationNumberArray[i] = creationNumber; //creation number always increases over time. So if I had a different task here with creation umber 4, that's fine now I rewrite it to 6.
+                    TaskTypeActivationCreationNumberArray[i] = creationNumber; //creation number always increases over time. So if I had a different task here with creation number 4, that is fine now I rewrite it to 6.
                     if (t.MinTaskLength < TaskMinLegthArray[i]) TaskMinLegthArray[i] = t.MinTaskLength;
                     UpdateQueue(i);
                 }
@@ -384,7 +382,7 @@ namespace PlanValidation1
                 }
                 else if (frozenPosition == i)
                 {
-                    //All previous variabless are stil ast starting positions so for exmapel A1 B1 we are now doing C is our frozen and we added C4.
+                    //All previous variables are stil at starting positions so for example A1 B1 and we are now doing C which is frozen and we added C4.
                     //i don't need to add this to queue because i can just iterate towards it normally. 
                     return;
                 }
@@ -414,7 +412,7 @@ namespace PlanValidation1
             {
                 if (listBefore[i] != null && listAfter[i] != null)
                 {
-                    //There is a codnition that links a subtask before and after this subtask.  But because these subtasks are before and after our it is already transitively implied.
+                    //There is a condition that links a subtask before and after this subtask.  But because these subtasks are before and after our it is already transitively implied.
                     foreach (Tuple<int, int> c in orderConditions.Where(x => listBefore[i].Contains(x.Item1) && listAfter[i].Contains(x.Item2)).ToList())
                     {
                         orderConditions.Remove(c);
@@ -479,7 +477,7 @@ namespace PlanValidation1
                 //We care about new tasks in order to not  repeat same task mutliple times. 
                 if (TaskTypeActivationCreationNumberArray[i] >= LastCreationNumber)
                 {
-                    List<Tuple<Task, Task[], List<Constant>>> newvariants = GetNextSuitableTask(TaskTypeArray[i], -1, i, emptyVars, new Task[TaskTypeArray.Length], planSize); //Trying with emptz string with all vars it has error in fill maintask //Should this be new empty string or is allvars ok?
+                    List<Tuple<Task, Task[], List<Constant>>> newvariants = GetNextSuitableTask(TaskTypeArray[i], -1, i, emptyVars, new Task[TaskTypeArray.Length], planSize);
                     ruleVariants.AddRange(newvariants);
                 }
             }
@@ -516,7 +514,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Fills nulls in rule with all possible constant that fit the type. returns as one big list of list of strings.
+        /// Fills nulls in rule with all possible constants that fit the type. returns as one big list of list of strings.
         /// </summary>
         /// <param name="item3"></param>
         /// <param name="allVarsTypes"></param>
@@ -550,7 +548,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Creates empty vars from all vars. Empty vars is a list that is empty and as big as allvars but filled where rule uses constant not variable. 
+        /// Creates empty vars from all vars. Empty vars is a list that is empty and as big as allvars but filled where rule uses constants not variables. 
         /// variables start with ?. 
         /// </summary>
         /// <returns></returns>
@@ -584,23 +582,17 @@ namespace PlanValidation1
         /// <summary>
         ///
         /// </summary>
-        /// <param name="maximumsPosition"> This says which combinations of subtask I already tried. Specifically the maximum instance number of task I atried with all the previous verison of previous subtasks. 
-        /// So if I am at A4B3 now and I have 10A instances and 5Binstances. Then maximum for A is 4 and maximum for B is 5. Cause with A3 I tried all Bs form B1 to B5. So now if I get B 6 i know i have to go to queue catch mzsel fup to A4B3.</param>
+        /// <param name="maximumsPosition"> This says which combinations of subtask I already tried. Specifically the maximum instance number of task I tried with all the previous versions of previous subtasks. 
+        /// So if I am at A4B3 now and I have 10A instances and 5Binstances. Then maximum for A is 4 and maximum for B is 5. Cause with A3 I tried all Bs from B1 to B5. So now if I get B 6 i know i have to go to queue and catch myself up to A4B3.</param>
         /// <param name="frozenQueue"></param>
         /// <param name="maximumPosition"></param>
-        /// <param name="LastReachedStandard">this is the position I last reached through normal iteration not through froyen queuse. So the A4B3 mentioned above.</param>
+        /// <param name="LastReachedStandard">this is the position I last reached through normal iteration not through frozen queue. So the A4B3 mentioned above.</param>
         /// <param name="frozenQueue"> first value is position of this new istance. (like which subtask) second value is the instances number</param>
-        ///<param name="lastReached"> This is last reached including froyen queueue. for example if B6 is froyen this might be A1B6.
+        ///<param name="lastReached"> This is last reached including frozen queueue. for example if B6 is frozen this might be A1B6.
         ///
         /// <returns></returns>
         public RuleInstance GetNextRuleInstance(out bool triedAllCombinations, int planSize)
         {
-            /*if (myHeuristic is InstancesHeuristic)
-             {
-                 InstancesHeuristic instheuristic = (InstancesHeuristic)myHeuristic;
-                 instheuristic.Recalculate(TaskTypeArray);
-                 myHeuristic = instheuristic;
-             }*/
             triedAllCombinations = false;
             int[] newPosition = null;
             List<Task> subtasks = null;
@@ -636,8 +628,8 @@ namespace PlanValidation1
                         else
                         {
                             if (maximumPosition[IncreasedVariable] < newPosition[IncreasedVariable]) maximumPosition[IncreasedVariable] = newPosition[IncreasedVariable] - 1; //This allows for maximum position to be negative. If we haven't finished anything but that should  be okay.
-                                                                                                                                                                              //Why the if. Well lets say we previously did A4B8C1 and now after some time we do A5B2C1 well B maximum should still be at 8 not 2.                                                                                                                                               //
-                            if (maximumPosition.Count() > IncreasedVariable + 1 && lastReachedStandardPosition != null && maximumPosition[IncreasedVariable + 1] < lastReachedStandardPosition[IncreasedVariable + 1]) maximumPosition[IncreasedVariable + 1] = lastReachedStandardPosition[IncreasedVariable + 1]; //Why does this work?
+                                                                                                                                                                              //Why the if? Well lets say we previously did A4B8C1 and now after some time we do A5B2C1 well B maximum should still be at 8 not 2.                                                                                                                                               //
+                            if (maximumPosition.Count() > IncreasedVariable + 1 && lastReachedStandardPosition != null && maximumPosition[IncreasedVariable + 1] < lastReachedStandardPosition[IncreasedVariable + 1]) maximumPosition[IncreasedVariable + 1] = lastReachedStandardPosition[IncreasedVariable + 1];
                             //We had A4B7C3 we moved from here to A4B8C1 because we only have 3 C this correctly updates maximum for Bs to 7
                             //but also needs to update maximum for Cs to 3 otherwise it will stay at 2. 
                             //The second part of the if is for the same reason as the if above. 
@@ -673,7 +665,7 @@ namespace PlanValidation1
                 }
                 if (numOfOrderedTasksBeforeThisTask?[tPosition] > 0)
                 {
-                    if (!(Math.Ceiling(t.StartIndex) >= minOrderedTaskPosition[tPosition])) return false; //>= because if normal task is on position 0 and so is empyt atsk and normal task must be befroe empty task than its 0>=(1-1)
+                    if (!(Math.Ceiling(t.StartIndex) >= minOrderedTaskPosition[tPosition])) return false; //>= because if normal task is on position 0 and so is empty task and normal task must be before empty task than its 0>=(1-1)
                 }
                 for (int j = i + 1; j < subtasks.Count(); j++)
                 {
@@ -739,10 +731,10 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// gets the next position assuming some value is froyen. For exmaple M->A, B,C we have 10A, 5B and 3C currently B5 is frozen.
+        /// gets the next position assuming some value is frozen. For example M->A, B,C we have 10A, 5B and 3C currently B5 is frozen.
         /// So position 1 is frozen and the last reached position must have 5 on position 1 already.
-        /// Note lastreached position is position after already freezing B5 not the standard position here we were before freeying happened.,
-        /// If positionofFroyenValue=-1 than this acts like normal standard getnextcombo. 
+        /// Note lastreached position is position after already freezing B5 not the standard position here we were before freezing happened.,
+        /// If positionofFrozenValue=-1 then this acts like normal standard getnextcombo. 
         /// </summary>
         /// <param name="lastReachedPositionWithFrozenValue"></param>
         /// <param name="positionofFrozenValue"></param>
@@ -809,10 +801,10 @@ namespace PlanValidation1
 
         /// <summary>
         /// Returns whether the first position is bigger/later than the second position. 
-        /// All positions are traversed in this order A1..ALast and first we iterate over last variable and then first so for example.
+        /// All positions are traversed in this order A1..ALast_index and first we iterate over last variable and then first so for example:
         /// A5B2C7>A5B2C6
         /// A2B7C1>A1B8C3.
-        /// If position are exactly the same we return false./// 
+        /// If positions are exactly the same we return false./// 
         /// </summary>
         /// <param name="newPosition"></param>
         /// <param name="lastReachedStandardPosition"></param>
@@ -834,7 +826,7 @@ namespace PlanValidation1
 
         //This finds all applicable tasks from list.
         //Tuple item1 is main task, list of subtasks and allvars.       
-        //Index refers to position in heuristic. Mapped index referes to actual position in task type. Newindex also refers to actual position in tasktype. 
+        //Index refers to position in heuristic. Mapped index refers to actual position in task type. Newindex also refers to actual position in tasktype. 
         private List<Tuple<Task, Task[], List<Constant>>> GetNextSuitableTask(TaskType t, int index, int newindex, List<Constant> partialAllVars, Task[] subtasks, int planSize)
         {
             bool doingNewtask = false;
@@ -855,11 +847,11 @@ namespace PlanValidation1
             }
             if (!doingNewtask && mappedIndex < newindex)    //This ensures that if I have rule with 2 newsubtasks I wont get it twice. 
                                                             //Anything after newindex can be both new and old. 
-                                                            //This line wont let me use last creation attempts but I have to use real numberr otherwise lets say I ahve two new taskss A, B but I tried A already. Well now I try with B onlz but this only allows A to use new instances after B and I still need that one instance. . 
+                                                            //This line wont let me use last creation attempts but I have to use real number otherwise lets say I have two new tasks A, B but I tried A already. Well now I try with B only but this only allows A to use new instances after B and I still need that one instance. . 
             {
                 unusedInstances = unusedInstances.Where(x => x.CreationNumber < LastCreationNumber);
             }
-            //If index is new index we keep ti the way it is because we want to go with that first. But after we go from left to right. So we start with index 0. But index 0 means I want the first subatssk according to my heuristic, which might be on position 5. So I keep info on position 5.
+            //If index is new index we keep it the way it is because we want to go with that first. But after we go from left to right. So we start with index 0. But index 0 means I want the first subtask according to my heuristic, which might be on position 5. So I keep info on position 5.
 
             List<int> myReferences = ArrayOfReferenceLists[mappedIndex];
             List<Tuple<Task, Task[], List<Constant>>> myResult = new List<Tuple<Task, Task[], List<Constant>>>();
@@ -896,7 +888,7 @@ namespace PlanValidation1
                                 unusedInstances = unusedInstances.Where(x => Math.Ceiling(x.StartIndex) > Math.Floor(l.EndIndex)); //My task must start after task l.
                             }
                         }
-                        unusedInstances = unusedInstances.Where(x => Differs(x.GetActionVector(), l.GetActionVector())); //NO problem on empty task becasue they return null.
+                        unusedInstances = unusedInstances.Where(x => Differs(x.GetActionVector(), l.GetActionVector())); //NO problem on empty task because they return null.
                                                                                                                          //This is not the same as the sum check later. 
                     }
                 }
@@ -908,10 +900,9 @@ namespace PlanValidation1
             }
             if (numOfOrderedTasksBeforeThisTask?[mappedIndex] > 0)
             {
-                unusedInstances = unusedInstances.Where(x => Math.Ceiling(x.StartIndex) >= minOrderedTaskPosition[mappedIndex]); //>= because if normal task is on position 0 and so is empyt atsk and normal task must be befroe empty task than its 0>=(1-1)
+                unusedInstances = unusedInstances.Where(x => Math.Ceiling(x.StartIndex) >= minOrderedTaskPosition[mappedIndex]); //>= because if normal task is on position 0 and so is empty task and normal task must be before empty task than its 0>=(1-1)
             } //This shuld be okay even with empty tasks as they have minlegtharray of task 0
 
-            //if index== newindex we didnt do anything and kept it that way.
             if (doingNewtask) index = -1;
             foreach (Task tInstance in unusedInstances)
             {
@@ -931,7 +922,7 @@ namespace PlanValidation1
                     }
                     else
                     {
-                        //We need to skip the newindex casue we already did it. So lets assume the new index has index 2 and its mappedIndex is 1. So we must make sure that we skip index=1
+                        //We need to skip the newindex because we already did it. So lets assume the new index has index 2 and its mappedIndex is 1. So we must make sure that we skip index=1
                         if (index + 1 == myHeuristic.ReverseMapping(newindex) && myHeuristic.ReverseMapping(newindex) < TaskTypeArray.Length - 1)
                         {//This makes us skip the new task. because we already picked the task for the new task. 
                             newMyResult = GetNextSuitableTask(TaskTypeArray[myHeuristic.Mapping(index + 2)], index + 2, newindex, newAllVars, newSubTasks, planSize);
@@ -967,7 +958,7 @@ namespace PlanValidation1
 
         /// <summary>
         /// Returns true if task with index must be in the rule before task with odlindex. Includes transitivity. 
-        /// So if A < B and B<cand we ask about A and C this retruns true. As opposed to normal ISBefore which would return false.  
+        /// So if A < B and B<c and we ask about A and C this retruns true. As opposed to normal ISBefore which would return false.  
         /// </summary>
         /// <param name="index"></param>
         /// <param name="oldIndex"></param>
@@ -1016,7 +1007,7 @@ namespace PlanValidation1
         }
 
         /// <summary>
-        /// Treis to fill the allvars in this rule. Currently will not fillthe main task variables those will be filled retrospectively if the rule filling is correct.
+        /// Tries to fill the allvars in this rule. Currently will not fillthe main task variables those will be filled retrospectively if the rule filling is correct.
         /// Returns new string[] which represents new allVars adjusted. If it didn't work returns null.
         /// 
         /// </summary>

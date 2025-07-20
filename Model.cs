@@ -18,8 +18,8 @@ namespace PlanValidationExe
         internal Dictionary<String, ConstantType> AllConstantTypes { get; set; }
 
         /// <summary>
-        /// Marks all task and rules that can be reached from decomposition of goal rule. 
-        /// This does not mark actionTypes. But that is not necessary as wehn we create actions, we look at tasktypes and their reachability.   
+        /// Marks all tasks and rules that can be reached from decomposition of goal rule. 
+        /// This does not mark actionTypes. But that is not necessary as when we create actions, we look at tasktypes and their reachability.   
         /// </summary>
         /// <param name="goalRule"></param>
         internal void MarkAsReachable(Rule goalRule)
@@ -35,7 +35,7 @@ namespace PlanValidationExe
             {
                 if (!r.reachable)
                 {
-                    //This lets the rule knwow it will be removed. So the rule will tell it's main task and all subtasks to remove it from their lists of rules. So we remove two pointers to this rule. 
+                    //This lets the rule know it will be removed. So the rule will tell it's main task and all subtasks to remove it from their lists of rules. So we remove two pointers to this rule. 
                     //The last pointer goes from allrules so this one will be deleted after. 
                     r.NotifyOfRemoval();
                     deleteRules.Add(r);
@@ -47,7 +47,7 @@ namespace PlanValidationExe
             }
             deleteRules = null;
             //At this point the rules in delete rules are unreachable so the garbage collector can remove them.
-            //Tasks have removed connection to their deleted rules hoewever they still have to be deleted. 
+            //Tasks have removed connection to their deleted rules however they still have to be deleted. 
             List<TaskType> deleteTasks = new List<TaskType>();
             foreach (List<TaskType> list in AllTaskTypes.Values)
             {
