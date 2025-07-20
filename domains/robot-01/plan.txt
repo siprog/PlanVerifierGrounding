@@ -1,0 +1,1 @@
+(open_c_r2_d02_)(move_c_r2_d02_)(pickup_o1_r2_)(move_r2_c_d02_)(move_c_r1_d01_)(putdown_o1_r1_)
