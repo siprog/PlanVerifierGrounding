@@ -23,16 +23,16 @@ namespace PlanValidation1
             {
                 domainS = args[0];
                 problemS = args[1];
-                planS = args[2];                
+                planS = args[2];
             }
             if (ContainsParameter(Globals.NotInterleavingS, args)) Globals.Interleaving = false;
             if (ContainsParameter(Globals.KnownGoalTaskS, args))
             {
-                Globals.KnownRootTask = true;                
+                Globals.KnownRootTask = true;
             }
             if (ContainsParameter(Globals.KnownGoalStateS, args))
             {
-                Globals.CheckGoalState= true;
+                Globals.CheckGoalState = true;
             }
             if (ContainsParameter(Globals.IgnoreCaseArgS, args))
             {
@@ -67,10 +67,10 @@ namespace PlanValidation1
                 if (Globals.KnownRootTask) m.MarkAsReachable(goalRule);
                 if (Globals.KnownRootTask) m.RemoveUnreachableTasks();
                 SearchHeuristic s = new DistanceToGoalHeuristic(m.Allrules, goalRule);
-                HeuristicStructure hS = new HeuristicStructure(s,m.AllTaskTypes.Count()+1);
-                bool isValid = planValidator.IsPlanValid(plan, m.AllTaskTypes, m.InitialState, m.AllConstants.Values.ToList(), m.EmptyRules, out taskCount, goalRule, goalState,watch, hS);
+                HeuristicStructure hS = new HeuristicStructure(s, m.AllTaskTypes.Count() + 1);
+                bool isValid = planValidator.IsPlanValid(plan, m.AllTaskTypes, m.InitialState, m.AllConstants.Values.ToList(), m.EmptyRules, out taskCount, goalRule, goalState, watch, hS);
                 watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds; 
+                var elapsedMs = watch.ElapsedMilliseconds;
                 if (isValid) Console.WriteLine("Plan  is valid. It took {0} s.Plan Length {1}. Program generated {2} tasks.Current Heuristic is {3}", elapsedMs / 1000f, plan.Count, taskCount, Globals.Heuristic);
                 else Console.WriteLine("Plan  is invalid. It took {0} s. Plan Length {1}. Program generated {2} tasks.Current Heuristic is {3}", elapsedMs / 1000f, plan.Count, taskCount, Globals.Heuristic);
 

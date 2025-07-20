@@ -74,7 +74,7 @@ namespace PlanValidation1
             }
         }
 
-public Task(Task t)
+        public Task(Task t)
         {
             this.TaskInstance = t.TaskInstance;
             this.ActionVector = t.ActionVector;
@@ -116,7 +116,7 @@ public Task(Task t)
         /// <returns></returns>
         public bool isEqualTo(Task t)
         {
-            return (t.TaskInstance.Equals(this.TaskInstance) && GetActionVector().SequenceEqual(t.GetActionVector()) && GetStartIndex() == t.GetStartIndex() && GetEndIndex() == t.GetEndIndex()) ;
+            return (t.TaskInstance.Equals(this.TaskInstance) && GetActionVector().SequenceEqual(t.GetActionVector()) && GetStartIndex() == t.GetStartIndex() && GetEndIndex() == t.GetEndIndex());
         }
 
         public override bool Equals(object obj)
@@ -126,7 +126,7 @@ public Task(Task t)
                 return false;
             }
             Task t = obj as Task;
-            return (TaskInstance.Equals(t.TaskInstance) && GetActionVector().SequenceEqual(t.GetActionVector()) && GetStartIndex() == t.GetStartIndex() && GetEndIndex() == t.GetEndIndex()) ;
+            return (TaskInstance.Equals(t.TaskInstance) && GetActionVector().SequenceEqual(t.GetActionVector()) && GetStartIndex() == t.GetStartIndex() && GetEndIndex() == t.GetEndIndex());
         }
 
         public override int GetHashCode()
@@ -134,12 +134,13 @@ public Task(Task t)
             int hash = TaskInstance.GetHashCode();
             //Start index times 10 so that it is a whole number. (0,5->5). 
             //negative hashcodes are okay. 
-            hash = hash * 11 + (int)(GetStartIndex()*10) + (int)(GetEndIndex()*10);
+            hash = hash * 11 + (int)(GetStartIndex() * 10) + (int)(GetEndIndex() * 10);
             int i = 1;
-            foreach (bool a in ActionVector) {
-                if (a) hash = hash + 7*i; //for action vector 0 1 0 1 we add 7*2 and 7*4.
+            foreach (bool a in ActionVector)
+            {
+                if (a) hash = hash + 7 * i; //for action vector 0 1 0 1 we add 7*2 and 7*4.
                 i++;
-            }     
+            }
             return hash;
         }
 

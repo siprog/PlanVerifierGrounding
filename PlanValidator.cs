@@ -37,7 +37,7 @@ namespace PlanValidation1
         /// <param name="allConstants"></param>
         /// <param name="emptyRules"></param>
         /// <returns></returns>
-        public bool IsPlanValid(List<Action> plan, Dictionary<String,List<TaskType>> allTaskTypes, List<Term> initialConditions, List<Constant> allConstants, List<Rule> emptyRules, out int taskCount, Rule goalRule, List<Term> goalState, Stopwatch watch, HeuristicStructure applicableRules)
+        public bool IsPlanValid(List<Action> plan, Dictionary<String, List<TaskType>> allTaskTypes, List<Term> initialConditions, List<Constant> allConstants, List<Rule> emptyRules, out int taskCount, Rule goalRule, List<Term> goalState, Stopwatch watch, HeuristicStructure applicableRules)
         {
             int iteration = 0;
             List<Slot> timeline = CreateEmptyTimeline(plan.Count + 1);
@@ -126,7 +126,7 @@ namespace PlanValidation1
             newTasks = new HashSet<Task>();
             while (!applicableRules.IsEmpty())
             {
-                Rule r = applicableRules.Pop();                
+                Rule r = applicableRules.Pop();
                 HashSet<RuleInstance> ruleInstances = r.GetRuleInstances(plan.Count, allConstants, plan.Count);
                 bool RuleWasCreatedInThisRound = false;
                 //Even though the rule instance might not produce a real task. We already tried all task combinatinons so in the next attempt we need something new. 
@@ -134,7 +134,7 @@ namespace PlanValidation1
                 //No actually teh last creation number can onlz have numbe rin once its reallz created task. 
                 foreach (RuleInstance ruleInstance in ruleInstances)
                 {
-                    
+
                     List<Task> subtasks = new List<Task>();
                     Term mainTaskName = ruleInstance.MainTask.TaskInstance;
                     subtasks = ruleInstance.Subtasks;
@@ -821,7 +821,7 @@ namespace PlanValidation1
             return -1;
         }
 
-        private TaskType FindTaskType(Action a, Dictionary<String,List<TaskType>> allTaskTypes)
+        private TaskType FindTaskType(Action a, Dictionary<String, List<TaskType>> allTaskTypes)
         {
             if (allTaskTypes.ContainsKey(a.ActionInstance.Name))
             {

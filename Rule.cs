@@ -139,7 +139,7 @@ namespace PlanValidation1
             if (negBetweenConditions == null) negBetweenConditions = new List<Tuple<int, int, string, List<int>>>();
             listAfter = new List<int>[TaskTypeArray.Length];
             listBefore = new List<int>[TaskTypeArray.Length];
-            myHeuristic = CreateHeuristic(ArrayOfReferenceLists,AllVars);
+            myHeuristic = CreateHeuristic(ArrayOfReferenceLists, AllVars);
         }
 
         private SubtaskFillingHeuristic CreateHeuristic(List<int>[] ArrayOfReferenceLists, List<String> AllVars)
@@ -147,13 +147,13 @@ namespace PlanValidation1
             SubtaskFillingHeuristic heuristic;
             if (Globals.Heuristic == Globals.Heuristics.MostParameters)
             {
-                return heuristic = new MostParametersHeuristic(ArrayOfReferenceLists,AllVars);
+                return heuristic = new MostParametersHeuristic(ArrayOfReferenceLists, AllVars);
             }
             else if (Globals.Heuristic == Globals.Heuristics.LeastParameters)
             {
                 return heuristic = new LeastParametersHeuristic(ArrayOfReferenceLists, AllVars);
             }
-            else if (Globals.Heuristic==Globals.Heuristics.Instances)
+            else if (Globals.Heuristic == Globals.Heuristics.Instances)
             {
                 return heuristic = new InstancesHeuristic(TaskTypeArray);
             }
@@ -177,7 +177,7 @@ namespace PlanValidation1
                 reachable = true;
                 foreach (TaskType t in TaskTypeArray)
                 {
-                    t.MarkAsReached(dis+1);
+                    t.MarkAsReached(dis + 1);
                 }
                 if (!MainTaskType.reachable) mainTaskType.MarkAsReached(dis);
             }
@@ -418,7 +418,7 @@ namespace PlanValidation1
         /// Empty rules can go through this they will not return any ruleInstance.
         /// </summary>
         public HashSet<RuleInstance> GetRuleInstances(int size, List<Constant> allConstants, int planSize)
-        {            
+        {
             if (myHeuristic is InstancesHeuristic)
             {
                 InstancesHeuristic instheuristic = (InstancesHeuristic)myHeuristic;
@@ -440,9 +440,9 @@ namespace PlanValidation1
                 //Any task with a higher creation number was created after and so is new. 
                 //We care about new tasks in order to not  repeat same task mutliple times. 
                 if (TaskTypeActivationCreationNumberArray[i] >= LastCreationNumber)
-                {                    
+                {
                     List<Tuple<Task, Task[], List<Constant>>> newvariants = GetNextSuitableTask(TaskTypeArray[i], -1, i, emptyVars, new Task[TaskTypeArray.Length], planSize); //Trying with emptz string with all vars it has error in fill maintask //Should this be new empty string or is allvars ok?
-                    ruleVariants.AddRange(newvariants);                 
+                    ruleVariants.AddRange(newvariants);
                 }
             }
             HashSet<RuleInstance> ruleInstances = new HashSet<RuleInstance>();
@@ -453,7 +453,7 @@ namespace PlanValidation1
                     if (ruleVariant.Item3.Contains(null)) //This might happen in multiple ways:
                                                           //1] main task has some parameter that none of its subtasks look at. Problem one we fill by creating a task with all possible constants. 
                                                           //2] there is a forall condition in my conditions. This will not happen as in emptyvars this value is filled. 
-                    {                        
+                    {
                         List<List<Constant>> newAllVars = FillWithAllConstants(ruleVariant.Item3, AllVarsTypes, allConstants, new List<List<Constant>>());
                         newAllVars = newAllVars.Distinct().ToList();
                         foreach (List<Constant> allVar in newAllVars)
@@ -470,10 +470,10 @@ namespace PlanValidation1
                     else
                     {
                         RuleInstance ruleInstance = new RuleInstance(ruleVariant.Item1, ruleVariant.Item2.ToList(), this, ruleVariant.Item3.Select(x => x.Name).ToList(), allConstants);
-                        if (ruleInstance.IsValid()) ruleInstances.Add(ruleInstance);                        
+                        if (ruleInstance.IsValid()) ruleInstances.Add(ruleInstance);
                     }
                 }
-            }            
+            }
             return ruleInstances;
         }
 
@@ -556,7 +556,7 @@ namespace PlanValidation1
                 doingNewtask = true;
                 //these unusedinstances originally had to list at the end does not seem to make much difference in speed whether its there or not.  
                 unusedInstances = unusedInstances.Where(x => x.CreationNumber >= LastCreationNumber);
-                   
+
                 index = newindex; //Temporarily we change the index so we don't have to change everything else and then after we switch it back to -1.
                 mappedIndex = newindex; //We still want to do the new subtask first. 
             }
@@ -608,7 +608,7 @@ namespace PlanValidation1
                             }
                         }
                         unusedInstances = unusedInstances.Where(x => Differs(x.GetActionVector(), l.GetActionVector())); //NO problem on empty task becasue they return null.
-                                                                                                                                  //This is not the same as the sum check later. 
+                                                                                                                         //This is not the same as the sum check later. 
                     }
                 }
             }
@@ -623,13 +623,13 @@ namespace PlanValidation1
             } //This shuld be okay even with empty tasks as they have minlegtharray of task 0
 
             //if index== newindex we didnt do anything and kept it that way.
-            if (doingNewtask) index = -1;           
+            if (doingNewtask) index = -1;
             foreach (Task tInstance in unusedInstances)
             {
                 List<Constant> newAllVars = FillMainTask(tInstance, myReferences, partialAllVars);
                 if (newAllVars != null)
                 {
-                    Task[] newSubTasks = (Task[])subtasks.Clone();                    
+                    Task[] newSubTasks = (Task[])subtasks.Clone();
                     newSubTasks[mappedIndex] = tInstance;
                     //We just assigned the last task. 
                     if (index == TaskTypeArray.Length - 1 || (index + 1 == myHeuristic.ReverseMapping(newindex) && myHeuristic.ReverseMapping(newindex) == TaskTypeArray.Length - 1))
@@ -653,7 +653,7 @@ namespace PlanValidation1
                         }
                         myResult.AddRange(newMyResult);
                     }
-                }               
+                }
             }
             return myResult;
         }
@@ -788,9 +788,9 @@ namespace PlanValidation1
             }
             Rule r = obj as Rule;
             if (r.GetHashCode() != GetHashCode()) return false;
-            if (!MainTaskType.Equals(r.MainTaskType)) return false;            
-            return (NullAcceptingSequenceEqual(TaskTypeArray,r.TaskTypeArray) && NullAcceptingSequenceEqual(AllVars,r.AllVars) &&
-                NullAcceptingSequenceEqual(posPreConditions,r.posPreConditions) &&
+            if (!MainTaskType.Equals(r.MainTaskType)) return false;
+            return (NullAcceptingSequenceEqual(TaskTypeArray, r.TaskTypeArray) && NullAcceptingSequenceEqual(AllVars, r.AllVars) &&
+                NullAcceptingSequenceEqual(posPreConditions, r.posPreConditions) &&
                 NullAcceptingSequenceEqual(negPreConditions, r.negPreConditions) &&
                 NullAcceptingSequenceEqual(posBetweenConditions, r.posBetweenConditions) &&
                 NullAcceptingSequenceEqual(negBetweenConditions, r.negBetweenConditions) &&
@@ -800,7 +800,7 @@ namespace PlanValidation1
 
         public override int GetHashCode()
         {
-            int hash = MainTaskType.GetHashCode();            
+            int hash = MainTaskType.GetHashCode();
             hash = hash * 11 + (int)(posPreConditions.Count) + (int)(negPostConditions.Count * 10) + (int)(posBetweenConditions.Count) + (int)(negBetweenConditions.Count * 10);
             if (TaskTypeArray != null)
             {

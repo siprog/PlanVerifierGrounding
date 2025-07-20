@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace PlanValidationExe
 {
     class HeuristicStructure
-    {        
+    {
         private SearchHeuristic h;
         private HashSet<Rule>[] array;
         //We use heuritics where the heuristic with lowest number is the one we want. In this int we remember what is the current Minimum so we can just jump into the position. 
@@ -20,7 +20,7 @@ namespace PlanValidationExe
 
         public HeuristicStructure(SearchHeuristic h, int count)
         {
-            this.h = h;            
+            this.h = h;
             array = new HashSet<Rule>[count];
             count = 0;
         }
@@ -32,17 +32,19 @@ namespace PlanValidationExe
         /// <returns></returns>
         public Rule Pop()
         {
-            if (array[currentMin]!=null && array[currentMin].Count>0)
+            if (array[currentMin] != null && array[currentMin].Count > 0)
             {
-                Rule r=array[currentMin].First();
+                Rule r = array[currentMin].First();
                 array[currentMin].Remove(r);
                 count--;
                 return r;
-            } else if (currentMin<array.Count()-1)
+            }
+            else if (currentMin < array.Count() - 1)
             {
                 currentMin++;
                 return Pop();
-            } else
+            }
+            else
             {
                 //There is no rule left.
                 if (count != 0) Console.WriteLine(" Warning: The heuristic structure does not work properly. According to count there should be a rule left but according to Poping system there is not. ");
@@ -51,7 +53,7 @@ namespace PlanValidationExe
         }
 
         public void AddRange(HashSet<Rule> rules)
-        {            
+        {
             foreach (Rule r in rules)
             {
                 Add(r);
@@ -61,24 +63,26 @@ namespace PlanValidationExe
         public void Add(Rule r)
         {
             int i = h.GetValue(r);
-            if (array.Count() <= i) array=DoubleArraySize(array);
-            if (array[i]==null)
+            if (array.Count() <= i) array = DoubleArraySize(array);
+            if (array[i] == null)
             {
                 array[i] = new HashSet<Rule>();
             }
-            if (!array[i].Contains(r)) { array[i].Add(r);
-                                        count++;
+            if (!array[i].Contains(r))
+            {
+                array[i].Add(r);
+                count++;
             }
-            if (i < currentMin) currentMin = i;            
+            if (i < currentMin) currentMin = i;
         }
 
         private HashSet<Rule>[] DoubleArraySize(HashSet<Rule>[] array)
         {
             HashSet<Rule>[] array2 = new HashSet<Rule>[array.Count() * 2];
-            for (int i=0; i<array.Count(); i++)
+            for (int i = 0; i < array.Count(); i++)
             {
                 array2[i] = array[i];
-            }               
+            }
             return array2;
         }
 
@@ -88,7 +92,7 @@ namespace PlanValidationExe
         /// <param name="rules"></param>
         public void RemoveRange(List<Rule> rules)
         {
-            foreach(Rule r in rules)
+            foreach (Rule r in rules)
             {
                 Remove(r);
             }

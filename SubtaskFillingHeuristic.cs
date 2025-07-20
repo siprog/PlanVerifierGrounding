@@ -62,11 +62,11 @@ namespace PlanValidationExe
         public int[] GetListWithParamNumbers(List<int>[] ArrayOfReferenceLists, List<String> AllVars)
         {
             int[] numOfParameters = new int[ArrayOfReferenceLists.Count()];
-            for(int j=0;j<ArrayOfReferenceLists.Length;j++)
+            for (int j = 0; j < ArrayOfReferenceLists.Length; j++)
             {
                 var intList = ArrayOfReferenceLists[j];
                 int count = 0;
-                for (int i=0;i<intList.Count;i++)
+                for (int i = 0; i < intList.Count; i++)
                 {
                     if (AllVars[intList[i]].StartsWith("?")) count++;
                 }
@@ -100,7 +100,7 @@ namespace PlanValidationExe
         {
             int[] numOfInstances = new int[TaskTypeArray.Count()];
             for (int j = 0; j < TaskTypeArray.Length; j++)
-            {                
+            {
                 numOfInstances[j] = TaskTypeArray[j].Instances.Distinct().Count();
             }
             var sorted = numOfInstances.Select((x, i) => new { Value = x, OriginalIndex = i }).OrderBy(x => x.Value).ToList();
@@ -155,8 +155,8 @@ namespace PlanValidationExe
             //In order keeps the information of the number of variables for each subtask. 
             int[] numOfParameters = GetListWithParamNumbers(ArrayOfReferenceLists, AllVars);
             var sorted = numOfParameters.Select((x, i) => new { Value = x, OriginalIndex = i }).OrderByDescending(x => x.Value).ToList();
-            subtasksOrderReference= sorted.Select(x => x.OriginalIndex).ToList();
-        }        
+            subtasksOrderReference = sorted.Select(x => x.OriginalIndex).ToList();
+        }
     }
 
     class LeastParametersHeuristic : ParameterHeuristic
@@ -174,7 +174,7 @@ namespace PlanValidationExe
         {
             subtasksOrderReference = new List<int>();
             //In order keeps the information of the number of variables for each subtask. 
-            int[] numOfParameters = GetListWithParamNumbers(ArrayOfReferenceLists,AllVars);
+            int[] numOfParameters = GetListWithParamNumbers(ArrayOfReferenceLists, AllVars);
             var sorted = numOfParameters.Select((x, i) => new { Value = x, OriginalIndex = i }).OrderBy(x => x.Value).ToList();
             subtasksOrderReference = sorted.Select(x => x.OriginalIndex).ToList();
         }

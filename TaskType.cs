@@ -13,7 +13,7 @@ namespace PlanValidation1
         /// <summary>
         /// Rules for which this type of task is the main task type. 
         /// </summary>
-        public List<Rule> MainRules= new List<Rule>();
+        public List<Rule> MainRules = new List<Rule>();
         /// <summary>
         /// List of rules that contains this type of task as subtask. 
         /// </summary>
@@ -28,7 +28,7 @@ namespace PlanValidation1
         /// If true then this is either root task or some task to which root task decomposes.
         /// If this is false, it is a separate rule/task, so it won't help me get desired root task. Therefor I can remove this rule. 
         /// </summary>
-        internal bool reachable=false;
+        internal bool reachable = false;
 
         public TaskType(String name, int numOfVars)
         {
@@ -88,7 +88,7 @@ namespace PlanValidation1
         /// Tells the rules that this task is now ready. If the rule is full (all tasks are ready it returns it otherwise returns null)
         /// </summary>
         /// <returns></returns>
-        private Rule ActivateRule(Rule r, int i,int CreationNumber)
+        private Rule ActivateRule(Rule r, int i, int CreationNumber)
         {
             bool fullyActivated = r.Activate(this, i, CreationNumber);
             if (fullyActivated) return r;
@@ -106,7 +106,7 @@ namespace PlanValidation1
             HashSet<Rule> rulesReadyToGo = new HashSet<Rule>();
             foreach (Rule r in Rules)
             {
-                Rule r2 = ActivateRule(r, instancesCount,CreationNumber);
+                Rule r2 = ActivateRule(r, instancesCount, CreationNumber);
                 if (r2 != null) rulesReadyToGo.Add(r2);
             }
             return rulesReadyToGo;
@@ -132,7 +132,7 @@ namespace PlanValidation1
                 {
                     r.MarkAsReached(i);
                 }
-               
+
             }
             reachable = true;
         }
