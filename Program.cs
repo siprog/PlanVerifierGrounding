@@ -75,8 +75,8 @@ namespace PlanValidation1
                 var elapsedMs = watch.ElapsedMilliseconds;
                 if (isValid) Console.WriteLine("Plan  is valid. It took {0} s.Plan Length {1}. Program generated {2} tasks.Current Heuristic is {3}", elapsedMs / 1000f, plan.Count, taskCount, Globals.Heuristic);
                 else Console.WriteLine("Plan  is invalid. It took {0} s. Plan Length {1}. Program generated {2} tasks.Current Heuristic is {3}", elapsedMs / 1000f, plan.Count, taskCount, Globals.Heuristic);
-                RunAnalysis(everyTask, m.AllTaskTypes.Count + 1);
-                Console.WriteLine("Empty Tasks are {0}", emptyTask);
+                // RunAnalysis(everyTask, m.AllTaskTypes.Count + 1); Use for deeper analysis
+                // Console.WriteLine("Empty Tasks are {0}", emptyTask);
             }
             catch (ActionException e)
             {
