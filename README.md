@@ -1,5 +1,5 @@
 # PlanVerifierGrounding
-This is implementation of plan verifier described in the article:  On the impact of grounding on htn plan verification via parsing by Simona Ondrčková, Roman Barták, Pascal Bercher, and Gregor Behnke ICTAI 2023
+This is implementation of plan verifier described in the article:  Lessons Learned from the CYK Algorithm for Parsing-based Verification of Hierarchical Plans by Simona Ondrčková, Roman Barták, Pascal Bercher, and Gregor Behnke FLAIRS 2023
 This implementation of the described verifier is created by Simona Ondrčková.
 
 We provide three versions: the BFS with implementation improvements (main branch), DFS One by One and DFSAtOnce (in their respective branches). For more information on how they differ see the article. 
